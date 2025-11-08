@@ -1,0 +1,8 @@
+<h2> {% if object %} Update Club: {{ object.name }} {% else %} Add a Club {% endif %} </h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Save</button>
+    <a href="{% url 'club_list_view' %}">Cancel</a>
+</form>

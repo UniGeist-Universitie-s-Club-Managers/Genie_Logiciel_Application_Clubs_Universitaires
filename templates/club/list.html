@@ -1,0 +1,22 @@
+<table border="1" style="width:100%; text-align:left;">
+    <tr>
+        <td>Club Name</td>
+        <td>Establishment Date</td>
+        <td>Details</td>
+        <td>Update</td>
+        <td>Delete</td>
+    </tr>
+    {% for club in clubs %}
+    <tr>
+        <td>{{ club.name }}</td>
+        <td>{{ club.established_date }}</td>
+        <td><a href="{% url 'club_detail_view' club.pk %}">Details</a></td>
+        <td><a href="{% url 'club_update_view' club.pk %}">Update</a></td>
+        <td><a href="{% url 'club_delete_view' club.pk %}">Delete</a></td>
+
+
+    </tr>
+    {% empty %}
+    <p>No clubs available!</p>
+    {% endfor %}
+</table>
