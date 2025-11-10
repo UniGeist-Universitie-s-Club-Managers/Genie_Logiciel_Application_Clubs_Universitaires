@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Détails de l'Événement{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card" style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 15px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);">
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px 15px 0 0;">
+                    <h1 class="mb-0 text-center fw-bold"><i class="fas fa-calendar-alt"></i> {{ object.titre }}</h1>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Date de début:</strong> {{ object.date_debut|date:"d/m/Y H:i" }}</p>
+                            <p><strong>Date de fin:</strong> {{ object.date_fin|date:"d/m/Y H:i" }}</p>
+                            <p><strong>Lieu:</strong> {{ object.lieu }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Statut:</strong> {{ object.get_statut_display }}</p>
+                            <p><strong>Visibilité:</strong> {{ object.get_visibilite_display }}</p>
+                            <p><strong>Durée:</strong> {{ object.get_duree }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h5>Description</h5>
+                        <p>{{ object.description }}</p>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'liste' %}" class="btn btn-secondary">Retour à la liste</a>
+                        <div>
+                            <a href="{% url 'modifier' object.id %}" class="btn btn-warning me-2">Modifier</a>
+                            <a href="{% url 'annuler' object.id %}" class="btn btn-danger">Supprimer</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
