@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Demandes de Création de Club{% endblock %}
+
+{% block hero_title %}Gestion des Demandes de Création{% endblock %}
+{% block hero_subtitle %}Gérez toutes les demandes de création de nouveaux clubs{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="mb-4"><i class="fas fa-file-alt"></i> Demandes de Création de Club</h2>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'demande_creation_club_view' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus"></i> Nouvelle Demande
+            </a>
+        </div>
+    </div>
+
+    {% if demandes %}
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th><i class="fas fa-tag"></i> Nom du Club</th>
+                    <th><i class="fas fa-user-tie"></i> Président</th>
+                    <th><i class="fas fa-user-tie"></i> Vice-Président</th>
+                    <th><i class="fas fa-user"></i> Demandé par</th>
+                    <th colspan="3" class="text-center"><i class="fas fa-cog"></i> Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for demande in demandes %}
+                <tr>
+                    <td><strong>{{ demande.club_name }}</strong></td>
+                    <td>{{ demande.president_name }}</td>
+                    <td>{{ demande.vice_president_name }}</td>
+                    <td>
+                        <span class="badge bg-info">{{ demande.requested_by }}</span>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'demande_creation_club_detail_view' demande.demande_id %}" class="btn btn-sm btn-info" title="Voir les détails">
+                            <i class="fas fa-eye"></i> Détails
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'demande_creation_club_update_view' demande.demande_id %}" class="btn btn-sm btn-warning" title="Modifier">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'demande_creation_club_delete_view' demande.demande_id %}" class="btn btn-sm btn-danger" title="Supprimer">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'accept_demande' demande.demande_id %}" 
+                            class="btn btn-success btn-sm">
+                            Accepter
+                        </a>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-warning" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> <strong>Aucune demande de création de club !</strong>
+        <p class="mt-2">Créez une nouvelle demande en cliquant sur le bouton ci-dessus.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

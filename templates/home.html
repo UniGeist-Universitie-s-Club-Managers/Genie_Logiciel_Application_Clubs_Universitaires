@@ -1,0 +1,117 @@
+// {% extends 'base.html' %}
+
+{% block title %}Accueil - Gestion des Clubs Universitaires{% endblock %}
+
+{% block hero_title %}Bienvenue sur la Plateforme de Gestion des Clubs Universitaires{% endblock %}
+
+{% block hero_subtitle %}Connectez-vous, gérez vos clubs, participez aux événements et échangez sur le forum.{% endblock %}
+
+{% block content %}
+<!-- Section Utilisateurs -->
+<section id="utilisateurs" class="mb-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="section-card card h-100">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="fas fa-users"></i> Utilisateurs</h2>
+                    <p class="card-text">Gérez les profils des étudiants, administrateurs et membres des clubs. Inscrivez-vous, connectez-vous et personnalisez votre expérience.</p>
+                    <a href="{% url 'club_list_view' %}" class="btn btn-outline-primary">Accéder</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <img src="https://via.placeholder.com/500x300?text=Utilisateurs" alt="Utilisateurs" class="img-fluid rounded">
+        </div>
+    </div>
+</section>
+
+<!-- Section Clubs -->
+<section id="clubs" class="mb-5">
+    <div class="row">
+        <div class="col-md-6 order-md-2">
+            <div class="section-card card h-100">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="fas fa-users-cog"></i> Clubs</h2>
+                    <p class="card-text">Découvrez et rejoignez des clubs variés : sports, culturels, académiques. Créez votre propre club et gérez ses membres.</p>
+                    <a href="{% url 'club_list_view' %}" class="btn btn-outline-primary">Explorer</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 order-md-1">
+            <img src="https://via.placeholder.com/500x300?text=Clubs" alt="Clubs" class="img-fluid rounded">
+        </div>
+    </div>
+</section>
+
+<!-- Section Événements -->
+<section id="evenements" class="mb-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="section-card card h-100">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="fas fa-calendar-alt"></i> Événements</h2>
+                    <p class="card-text">Organisez et participez à des événements : conférences, ateliers, compétitions. Restez informé des dates et inscriptions.</p>
+                    <a href="{% url 'club_list_view' %}" class="btn btn-outline-primary">Voir les Événements</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <img src="https://via.placeholder.com/500x300?text=Événements" alt="Événements" class="img-fluid rounded">
+        </div>
+    </div>
+</section>
+
+<!-- Section Forum -->
+<section id="forum" class="mb-5">
+    <div class="row">
+        <div class="col-md-6 order-md-2">
+            <div class="section-card card h-100">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="fas fa-comments"></i> Forum</h2>
+                    <p class="card-text">Échangez avec la communauté universitaire. Posez des questions, partagez des idées et discutez des sujets qui vous passionnent.</p>
+                    <a href="{% url 'club_list_view' %}" class="btn btn-outline-primary">Accéder au Forum</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 order-md-1">
+            <img src="https://via.placeholder.com/500x300?text=Forum" alt="Forum" class="img-fluid rounded">
+        </div>
+    </div>
+</section>
+
+<!-- Section Aides -->
+<section id="aides" class="mb-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="section-card card h-100">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="fas fa-question-circle"></i> Aides</h2>
+                    <p class="card-text">Besoin d'aide ? Consultez nos guides, FAQs et tutoriels pour naviguer facilement sur la plateforme.</p>
+                    <a href="{% url 'club_list_view' %}" class="btn btn-outline-primary">Obtenir de l'Aide</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <img src="https://via.placeholder.com/500x300?text=Aides" alt="Aides" class="img-fluid rounded">
+        </div>
+    </div>
+</section>
+
+<!-- Section Ressources -->
+<section id="ressources" class="mb-5">
+    <div class="row">
+        <div class="col-md-6 order-md-2">
+            <div class="section-card card h-100">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="fas fa-book"></i> Ressources</h2>
+                    <p class="card-text">Accédez à des documents, templates et outils pour vos clubs et projets universitaires.</p>
+                    <a href="{% url 'club_list_view' %}" class="btn btn-outline-primary">Télécharger</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 order-md-1">
+            <img src="https://via.placeholder.com/500x300?text=Ressources" alt="Ressources" class="img-fluid rounded">
+        </div>
+    </div>
+</section>
+{% endblock %}

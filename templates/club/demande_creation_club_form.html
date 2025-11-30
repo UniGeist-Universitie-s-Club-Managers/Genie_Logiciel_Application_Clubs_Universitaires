@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}{% if object %}Modifier le Club{% else %}Créer un Club{% endif %}{% endblock %}
+{% block title %}{% if object %}Modifier la Demande{% else %}Créer une Demande{% endif %}{% endblock %}
 
-{% block hero_title %}{% if object %}Modifier : {{ object.name }}{% else %}Créer un Nouveau Club{% endif %}{% endblock %}
-{% block hero_subtitle %}Remplissez le formulaire pour {% if object %}mettre à jour{% else %}créer{% endif %} votre club{% endblock %}
+{% block hero_title %}{% if object %}Modifier la Demande{% else %}Créer une Nouvelle Demande{% endif %}{% endblock %}
+{% block hero_subtitle %}Remplissez le formulaire pour {% if object %}mettre à jour{% else %}créer{% endif %} votre demande de club{% endblock %}
 
 {% block content %}
 <div class="container my-5">
@@ -13,7 +13,7 @@
                 <div class="card-header bg-primary text-white">
                     <h2 class="card-title mb-0">
                         <i class="fas fa-{% if object %}edit{% else %}plus{% endif %}"></i> 
-                        {% if object %}Modifier le Club : {{ object.name }}{% else %}Créer un Nouveau Club{% endif %}
+                        {% if object %}Modifier la Demande{% else %}Créer une Nouvelle Demande{% endif %}
                     </h2>
                 </div>
                 <div class="card-body">
@@ -64,7 +64,7 @@
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-save"></i> Enregistrer
                             </button>
-                            <a href="{% url 'club_list_view' %}" class="btn btn-secondary btn-lg">
+                            <a href="{% url 'demande_list_view' %}" class="btn btn-secondary btn-lg">
                                 <i class="fas fa-times"></i> Annuler
                             </a>
                         </div>

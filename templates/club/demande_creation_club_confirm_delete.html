@@ -2,8 +2,8 @@
 
 {% block title %}Confirmer la Suppression{% endblock %}
 
-{% block hero_title %}Suppression du Club{% endblock %}
-{% block hero_subtitle %}Êtes-vous sûr de vouloir supprimer ce club ?{% endblock %}
+{% block hero_title %}Suppression de la Demande{% endblock %}
+{% block hero_subtitle %}Êtes-vous sûr de vouloir supprimer cette demande ?{% endblock %}
 
 {% block content %}
 <div class="container my-5">
@@ -20,10 +20,10 @@
                         <i class="fas fa-exclamation-circle"></i> <strong>Êtes-vous sûr ?</strong>
                     </div>
                     <p class="text-muted">
-                        Vous êtes sur le point de supprimer le club : <strong>"{{ object.name }}"</strong>
+                        Vous êtes sur le point de supprimer la demande de création du club : <strong>"{{ object.club_name }}"</strong>
                     </p>
                     <p class="text-warning">
-                        <i class="fas fa-info-circle"></i> Cette action est irréversible et supprimera toutes les données associées au club.
+                        <i class="fas fa-info-circle"></i> Cette action est irréversible et supprimera toutes les données associées à cette demande.
                     </p>
                 </div>
                 <div class="card-footer bg-light">
@@ -33,7 +33,7 @@
                             <i class="fas fa-check"></i> Confirmer la Suppression
                         </button>
                     </form>
-                    <a href="{% url 'club_list_view' %}" class="btn btn-secondary btn-lg ms-2">
+                    <a href="{% url 'demande_list_view' %}" class="btn btn-secondary btn-lg ms-2">
                         <i class="fas fa-times"></i> Annuler
                     </a>
                 </div>

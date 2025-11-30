@@ -1,0 +1,337 @@
+// {% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestion des Clubs Universitaires{% endblock %}</title>
+    <!-- Bootstrap CSS pour un aspect professionnel et responsive -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts pour une typographie agréable -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- CSS personnalisé -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top minimalist-navbar" id="mainNavbar">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}" id="navbarBrand">
+                <img src="{% static 'images/logo.png' %}" alt="Logo UniGeist" class="navbar-logo">
+                <span class="brand-text">UniGeist</span>
+            </a>
+            <div class="navbar-slogan">
+                <span class="brand-slogan">Plusieurs Clubs, Un Seul Esprit</span>
+            </div>
+            <button class="navbar-toggler minimalist-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="toggler-line"></span>
+                <span class="toggler-line"></span>
+                <span class="toggler-line"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bars"></i> Menu
+                        </a>
+                        <ul class="dropdown-menu minimalist-dropdown" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#utilisateurs" data-section="utilisateurs"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                            <li><a class="dropdown-item" href="#clubs" data-section="clubs"><i class="fas fa-users-cog"></i> Clubs</a></li>
+                            <li><a class="dropdown-item" href="{% url 'club_list_view' %}" data-section="evenements"><i class="fas fa-calendar-alt"></i> Événements</a></li>
+                            <li><a class="dropdown-item" href="#forum" data-section="forum"><i class="fas fa-comments"></i> Forum</a></li>
+                            <li><a class="dropdown-item" href="#aides" data-section="aides"><i class="fas fa-question-circle"></i> Aides & Ressources</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Section Hero -->
+    <section class="hero-section">
+        <div class="container text-center dynamic-text">
+            <h1 class="display-4 fw-bold">{% block hero_title %}Bienvenue sur la Plateforme de Gestion des Clubs Universitaires{% endblock %}</h1>
+            <p class="lead">{% block hero_subtitle %}Connectez-vous, gérez vos clubs, participez aux événements et échangez sur le forum.{% endblock %}</p>
+            <a href="{% url 'club_list_view' %}" class="btn btn-primary btn-lg">Commencer</a>
+        </div>
+    </section>
+
+    <!-- Contenu Principal -->
+    <main class="container my-5">
+        {% block content %}
+        <!-- Section Utilisateurs -->
+        <section id="utilisateurs" class="mb-5">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="section-card card h-100">
+                        <div class="card-body">
+                            <h2 class="card-title"><i class="fas fa-users"></i> Utilisateurs</h2>
+                            <p class="card-text">Gérez les profils des étudiants, administrateurs et membres des clubs. Inscrivez-vous, connectez-vous et personnalisez votre expérience.</p>
+                            <a href="#utilisateurs" class="btn btn-outline-primary">Accéder</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img src="{% static 'images/utilisateurs.jpg' %}" alt="Utilisateurs" class="img-fluid rounded">
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Clubs -->
+        <section id="clubs" class="mb-5">
+            <div class="row">
+                <div class="col-md-6 order-md-2">
+                    <div class="section-card card h-100">
+                        <div class="card-body">
+                            <h2 class="card-title"><i class="fas fa-users-cog"></i> Clubs</h2>
+                            <p class="card-text">Découvrez et rejoignez des clubs variés : sports, culturels, académiques. Créez votre propre club et gérez ses membres.</p>
+                            <a href="#clubs" class="btn btn-outline-primary">Explorer</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 order-md-1">
+                    <img src="{% static 'images/clubs.jpg' %}" alt="Clubs" class="img-fluid rounded">
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Événements -->
+        <section id="evenements" class="mb-5">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="section-card card h-100">
+                        <div class="card-body">
+                            <h2 class="card-title"><i class="fas fa-calendar-alt"></i> Événements</h2>
+                            <p class="card-text">Organisez et participez à des événements : conférences, ateliers, compétitions. Restez informé des dates et inscriptions.</p>
+                            <a href="{% url 'club_list_view' %}" class="btn btn-outline-primary">Voir les Événements</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img src="{% static 'images/evenements.jpg' %}" alt="Événements" class="img-fluid rounded">
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Forum -->
+        <section id="forum" class="mb-5">
+            <div class="row">
+                <div class="col-md-6 order-md-2">
+                    <div class="section-card card h-100">
+                        <div class="card-body">
+                            <h2 class="card-title"><i class="fas fa-comments"></i> Forum</h2>
+                            <p class="card-text">Échangez avec la communauté universitaire. Posez des questions, partagez des idées et discutez des sujets qui vous passionnent.</p>
+                            <a href="#forum" class="btn btn-outline-primary">Accéder au Forum</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 order-md-1">
+                    <img src="{% static 'images/forum.jpg' %}" alt="Forum" class="img-fluid rounded">
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Aides & Ressources -->
+        <section id="aides" class="mb-5">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="section-card card h-100">
+                        <div class="card-body">
+                            <h2 class="card-title"><i class="fas fa-question-circle"></i> Aides</h2>
+                            <p class="card-text">Besoin d'aide ? Consultez nos guides, FAQs et tutoriels pour naviguer facilement sur la plateforme.</p>
+                            <a href="#aides" class="btn btn-outline-primary">Obtenir de l'Aide</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img src="{% static 'images/aides.jpg' %}" alt="Aides" class="img-fluid rounded">
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Ressources -->
+        <section id="ressources" class="mb-5">
+            <div class="row">
+                <div class="col-md-6 order-md-2">
+                    <div class="section-card card h-100">
+                        <div class="card-body">
+                            <h2 class="card-title"><i class="fas fa-book"></i> Ressources</h2>
+                            <p class="card-text">Accédez à des documents, templates et outils pour vos clubs et projets universitaires.</p>
+                            <a href="#ressources" class="btn btn-outline-primary">Télécharger</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 order-md-1">
+                    <img src="{% static 'images/ressources.jpg' %}" alt="Ressources" class="img-fluid rounded">
+                </div>
+            </div>
+        </section>
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p>&copy; 2023 Gestion des Clubs Universitaires. Tous droits réservés.</p>
+            <p><a href="#" class="text-light">Contactez-nous</a> | <a href="#" class="text-light">Politique de confidentialité</a></p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS pour la dynamique (modals, dropdowns, etc.) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script personnalisé -->
+    <script src="{% static 'js/script.js' %}"></script>
+
+    <!-- Script pour rendre le template dynamique et fun -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navbar dynamique avec changement au scroll
+            const navbar = document.getElementById('mainNavbar');
+            let lastScrollTop = 0;
+
+            window.addEventListener('scroll', function() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                if (scrollTop > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+
+                // Masquer/montrer la navbar au scroll
+                if (scrollTop > lastScrollTop && scrollTop > 100) {
+                    navbar.style.transform = 'translateY(-100%)';
+                } else {
+                    navbar.style.transform = 'translateY(0)';
+                }
+                lastScrollTop = scrollTop;
+            });
+
+            // Highlight de la section active dans le dropdown
+            const sections = document.querySelectorAll('section[id]');
+            const dropdownItems = document.querySelectorAll('.dropdown-item');
+
+            function highlightDropdownItem() {
+                const scrollY = window.pageYOffset;
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 100;
+                    const sectionHeight = section.offsetHeight;
+                    const sectionId = section.getAttribute('id');
+
+                    if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                        dropdownItems.forEach(item => {
+                            item.classList.remove('active');
+                            if (item.getAttribute('data-section') === sectionId) {
+                                item.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', highlightDropdownItem);
+
+            // Smooth scrolling pour les liens de navigation
+            const anchorLinks = document.querySelectorAll('.navbar-nav .nav-link[href^="#"]');
+            anchorLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    if (targetSection) {
+                        const offsetTop = targetSection.offsetTop - 80; // Ajustement pour la navbar fixe
+                        window.scrollTo({
+                            top: offsetTop,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Animation d'apparition des sections au scroll
+            const sectionElements = document.querySelectorAll('section[id]');
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            sectionElements.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(30px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+
+            // Effet de survol fun pour les cartes de section
+            const sectionCards = document.querySelectorAll('.section-card');
+            sectionCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                    this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.3)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                    this.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2)';
+                });
+            });
+
+            // Animation du texte hero
+            const heroText = document.querySelector('.dynamic-text');
+            if (heroText) {
+                heroText.style.animation = 'fadeIn 2s ease-in-out, pulse 3s infinite 2s';
+            }
+
+            // Effet de particules subtiles en arrière-plan (optionnel, pour plus de fun)
+            const createParticle = () => {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = '4px';
+                particle.style.height = '4px';
+                particle.style.background = 'rgba(102, 126, 234, 0.3)';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = '100vh';
+                particle.style.animation = `floatUp ${Math.random() * 10 + 10}s linear infinite`;
+                document.body.appendChild(particle);
+
+                setTimeout(() => {
+                    particle.remove();
+                }, 10000);
+            };
+
+            // Créer des particules toutes les 2 secondes
+            setInterval(createParticle, 2000);
+
+            // Animation CSS pour les particules
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes floatUp {
+                    to {
+                        transform: translateY(-100vh);
+                        opacity: 0;
+                    }
+                }
+                @keyframes pulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
