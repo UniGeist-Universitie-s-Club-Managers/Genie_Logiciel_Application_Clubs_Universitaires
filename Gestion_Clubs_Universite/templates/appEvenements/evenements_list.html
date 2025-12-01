@@ -44,8 +44,6 @@
                     <div class="card-footer bg-light position-relative">
                         <div class="action-buttons">
                             <a href="{% url 'details' evenement.id %}" class="btn btn-outline-info btn-sm action-btn" title="Voir les détails"><i class="fas fa-eye"></i></a>
-                            <a href="{% url 'modifier' evenement.id %}" class="btn btn-outline-warning btn-sm action-btn" title="Modifier l'événement"><i class="fas fa-edit"></i></a>
-                            <a href="#" class="btn btn-outline-danger btn-sm action-btn" title="Supprimer l'événement" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="{{ evenement.id }}" data-title="{{ evenement.titre }}" data-date-debut="{{ evenement.date_debut|date:'d/m/Y H:i' }}" data-date-fin="{{ evenement.date_fin|date:'d/m/Y H:i' }}" data-lieu="{{ evenement.lieu }}"><i class="fas fa-trash"></i></a>
                         </div>
                     </div>
                 </div>

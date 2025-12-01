@@ -13,6 +13,9 @@ class Evenement(models.Model):
     lieu = models.CharField(max_length=200, validators=[validators.MinLengthValidator(5), validators.MaxLengthValidator(200), validators.RegexValidator(r'^[a-zA-Z0-9\s.,!?-]+$', message="Le lieu ne peut contenir que des lettres, chiffres, espaces et ponctuation basique.")])
     statut = models.CharField(max_length=50, choices=[('planifie', 'Planifié'), ('en_cours', 'En cours'), ('termine', 'Terminé'), ('annule', 'Annulé')])
     visibilite = models.CharField(max_length=50, choices=[('public', 'Public'), ('prive', 'Privé')])
+    featured = models.BooleanField(default=False, help_text="Événement à la une")
+    promotion_image = models.ImageField(upload_to='promotions/', blank=True, null=True, help_text="Image de promotion")
+    promotion_description = models.TextField(blank=True, null=True, help_text="Description de promotion")
 
     def __str__(self):
         return self.titre

@@ -30,6 +30,31 @@ class EvenementForm(forms.ModelForm):
             'statut': 'Choisissez le statut actuel de l\'événement.',
             'visibilite': 'Définissez si l\'événement est public ou privé.',
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['visibilite'].initial = 'public'
+
+
+class PromotionForm(forms.ModelForm):
+    class Meta:
+        model = Evenement
+        fields = ['promotion_description', 'promotion_image', 'featured']
+        widgets = {
+            'promotion_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Description de promotion pour Facebook'}),
+            'promotion_image': forms.FileInput(attrs={'class': 'form-control'}),
+            'featured': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'promotion_description': 'Description de promotion',
+            'promotion_image': 'Image de promotion',
+            'featured': 'Événement à la une',
+        }
+        help_texts = {
+            'promotion_description': 'Entrez une description attrayante pour la promotion sur Facebook.',
+            'promotion_image': 'Téléchargez une image pour accompagner la promotion.',
+            'featured': 'Cochez pour mettre cet événement à la une sur la page d\'accueil.',
+        }
             
 
 

@@ -5,39 +5,84 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card" style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 15px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);">
+            <div class="card event-card" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 15px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);">
                 <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px 15px 0 0;">
-                    <h1 class="mb-0 text-center fw-bold"><i class="fas fa-calendar-alt"></i> {{ object.titre }}</h1>
+                    <h2 class="card-title mb-0 text-center fw-bold"><i class="fas fa-calendar-check"></i> {{ evenement.titre }}</h2>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>Date de début:</strong> {{ object.date_debut|date:"d/m/Y H:i" }}</p>
-                            <p><strong>Date de fin:</strong> {{ object.date_fin|date:"d/m/Y H:i" }}</p>
-                            <p><strong>Lieu:</strong> {{ object.lieu }}</p>
+                            <p class="mb-2"><i class="fas fa-clock text-primary"></i> <strong>Date de début:</strong> {{ evenement.date_debut|date:"d/m/Y H:i" }}</p>
+                            <p class="mb-2"><i class="fas fa-clock text-danger"></i> <strong>Date de fin:</strong> {{ evenement.date_fin|date:"d/m/Y H:i" }}</p>
+                            <p class="mb-2"><i class="fas fa-map-marker-alt text-success"></i> <strong>Lieu:</strong> {{ evenement.lieu }}</p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Statut:</strong> {{ object.get_statut_display }}</p>
-                            <p><strong>Visibilité:</strong> {{ object.get_visibilite_display }}</p>
-                            <p><strong>Durée:</strong> {{ object.get_duree }}</p>
+                            <p class="mb-2"><i class="fas fa-info-circle text-info"></i> <strong>Statut:</strong> <span class="badge bg-{% if evenement.statut == 'planifie' %}primary{% elif evenement.statut == 'en_cours' %}success{% elif evenement.statut == 'termine' %}secondary{% else %}danger{% endif %}">{{ evenement.get_statut_display }}</span></p>
+                            <p class="mb-2"><i class="fas fa-eye text-warning"></i> <strong>Visibilité:</strong> <span class="badge bg-{% if evenement.visibilite == 'public' %}info{% else %}warning{% endif %}">{{ evenement.get_visibilite_display }}</span></p>
+                            <p class="mb-2"><i class="fas fa-hourglass-half text-secondary"></i> <strong>Durée:</strong> {{ evenement.get_duree }}</p>
                         </div>
                     </div>
-                    <div class="mt-3">
-                        <h5>Description</h5>
-                        <p>{{ object.description }}</p>
-                    </div>
+                    <hr>
+                    <p class="card-text"><i class="fas fa-align-left text-muted"></i> <strong>Description:</strong></p>
+                    <p>{{ evenement.description }}</p>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer bg-light">
                     <div class="d-flex justify-content-between">
-                        <a href="{% url 'liste' %}" class="btn btn-secondary">Retour à la liste</a>
+                        <a href="{% url 'liste' %}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Retour à la liste</a>
                         <div>
-                            <a href="{% url 'modifier' object.id %}" class="btn btn-warning me-2">Modifier</a>
-                            <a href="{% url 'annuler' object.id %}" class="btn btn-danger">Supprimer</a>
-                        </div>
+                            <a href="{% url 'download_pdf' evenement.id %}" class="btn btn-outline-primary"><i class="fas fa-download"></i> Télécharger PDF</a>
+                        </div>  
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 15px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title" id="deleteModalLabel"><i class="fas fa-exclamation-triangle"></i> Confirmation de suppression</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="alert alert-warning" role="alert" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%); border-left: 4px solid #ffc107; color: #856404; border-radius: 10px;">
+                    <h4 class="alert-heading">Attention !</h4>
+                    <p>Êtes-vous sûr de vouloir supprimer l'événement "<strong id="modalEventTitle"></strong>" ?</p>
+                    <hr>
+                    <p class="mb-0">Cette action est irréversible.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form id="deleteForm" method="POST" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Oui, supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteModal = document.getElementById('deleteModal');
+    const modalEventTitle = document.getElementById('modalEventTitle');
+    const deleteForm = document.getElementById('deleteForm');
+
+    deleteModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const eventId = button.getAttribute('data-id');
+        const eventTitle = button.getAttribute('data-title');
+
+        modalEventTitle.textContent = eventTitle;
+        deleteForm.action = "{% url 'annuler' 0 %}".replace('0', eventId);
+    });
+});
+</script>
+
 {% endblock %}
