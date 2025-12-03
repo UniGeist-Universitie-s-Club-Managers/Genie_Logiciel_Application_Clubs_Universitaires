@@ -20,6 +20,6 @@ urlpatterns = [
     path('demande/delete/<int:pk>/', DemandeCreationClubDeleteView.as_view(), name='demande_creation_club_delete_view'),
     path('admin/demandes/', DemandeCreationClubAdminListView.as_view(), name='demande_creation_club_admin_list_view'),
     path('demandes/accept/<int:demande_id>/', accept_demande, name='accept_demande'),
-
+    path('clublist/', ClubListAdminView.as_view(), name='club_list_admin_view'),
 
 ]

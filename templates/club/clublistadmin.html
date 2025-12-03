@@ -11,8 +11,8 @@
             <h2 class="mb-4"><i class="fas fa-list"></i> Liste des Clubs</h2>
         </div>
         <div class="col-md-4 text-md-end">
-            <a href="{% url 'demande_creation_club_view' %}" class="btn btn-primary btn-lg">
-                <i class="fas fa-plus"></i> Faire une demande
+            <a href="{% url 'club_add_view' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus"></i> Ajouter un Club
             </a>
         </div>
     </div>
@@ -57,7 +57,16 @@
                             <i class="fas fa-eye"></i> Détails
                         </a>
                     </td>
-                    
+                    <td class="text-center">
+                        <a href="{% url 'club_update_view' club.pk %}" class="btn btn-sm btn-warning" title="Modifier">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'club_delete_view' club.pk %}" class="btn btn-sm btn-danger" title="Supprimer">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

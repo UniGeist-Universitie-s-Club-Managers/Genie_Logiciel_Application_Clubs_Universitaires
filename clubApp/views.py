@@ -89,6 +89,7 @@ class DeleteView(DeleteView):
 #     form_class = DemandeCreationClubForm
 #     template_name = 'club/demande_creation_club_form.html'
 #     success_url = '/club/demandes/'
+
 class DemandeCreationClubView(CreateView):
     model = Demande_creation_club
     form_class = DemandeCreationClubForm
@@ -174,3 +175,34 @@ def accept_demande(request, demande_id):
 
     messages.success(request, "Le club a été créé avec succès !")
     return redirect('club_list_view')
+
+class ClubListAdminView(ListView):
+    model = Club
+    template_name = 'club/clublistadmin.html'
+    context_object_name = 'clubs'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Récupération des paramètres GET
+        search = self.request.GET.get('search')
+        date_filter = self.request.GET.get('date')
+
+        # 🔎 Rechercher par nom du club
+        if search:
+            queryset = queryset.filter(name__icontains=search)
+
+        # 📅 Filtrer par date (ex : année de création)
+        if date_filter:
+            queryset = queryset.filter(established_date__year=date_filter)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # garder les valeurs sélectionnées
+        context['selected_search'] = self.request.GET.get('search', '')
+        context['selected_date'] = self.request.GET.get('date', '')
+
+        return context
