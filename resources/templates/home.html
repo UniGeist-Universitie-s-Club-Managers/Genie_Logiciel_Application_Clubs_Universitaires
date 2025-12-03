@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ</title>
+</head>
+<body>
+    <h1>Foire Aux Questions (FAQ)</h1>
+    <div>
+        {% for faq in faqs %}
+            <div>
+                <h2>{{ faq.question }}</h2>
+                <p>{{ faq.answer }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

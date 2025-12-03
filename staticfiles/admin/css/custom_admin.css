@@ -1,0 +1,104 @@
+/* Custom Admin CSS for Resources/Aids Management System */
+
+/* Header background color */
+#header {
+    background-color: #0d6efd !important;
+    color: white !important;
+}
+
+/* Header text color */
+#header h1,
+#header h1 a,
+#header h1 a:link,
+#header h1 a:visited {
+    color: white !important;
+}
+
+/* User tools in header */
+#user-tools {
+    color: white !important;
+}
+
+#user-tools a {
+    color: white !important;
+}
+
+#user-tools a:focus,
+#user-tools a:hover {
+    color: #f0f0f0 !important;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    background-color: #0d6efd !important;
+    color: white !important;
+}
+
+.breadcrumbs a {
+    color: white !important;
+}
+
+.breadcrumbs a:focus,
+.breadcrumbs a:hover {
+    color: #f0f0f0 !important;
+}
+
+/* Module links */
+.module h2,
+.module caption,
+.inline-group h2 {
+    background-color: #0d6efd !important;
+    color: white !important;
+}
+
+/* Button styling to match theme */
+.button,
+input[type=submit],
+input[type=button],
+.submit-row input,
+a.button {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: white !important;
+}
+
+.button:hover,
+input[type=submit]:hover,
+input[type=button]:hover,
+.submit-row input:hover,
+a.button:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+}
+
+.button.default,
+input[type=submit].default,
+.submit-row input.default,
+a.button.default {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
+.button.default:hover,
+input[type=submit].default:hover,
+.submit-row input.default:hover,
+a.button.default:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+}
+
+/* Selected items */
+.selected {
+    background-color: #0d6efd !important;
+}
+
+.selected a {
+    color: white !important;
+}
+
+/* Active filters */
+.selected a.active {
+    color: white !important;
+}
+
+

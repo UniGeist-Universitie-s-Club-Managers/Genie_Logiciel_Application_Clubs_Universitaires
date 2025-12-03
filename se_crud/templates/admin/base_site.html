@@ -1,0 +1,54 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<div class="admin-header-wrapper">
+    <div class="admin-header-content">
+        <!-- Logo et titre -->
+        <div class="admin-header-brand">
+            <a href="{% url 'admin:index' %}" class="admin-logo-link">
+                {% if site_header %}
+                    <img src="{% static 'admin/img/logo.png' %}" alt="Logo" class="admin-logo">
+                {% endif %}
+                <span class="admin-site-title">{{ site_header|default:_('Django administration') }}</span>
+            </a>
+        </div>
+        
+        <!-- Navigation rapide -->
+        <nav class="admin-header-nav">
+            <a href="{% url 'admin_dashboard' %}" class="admin-nav-link">
+                <span class="admin-nav-text">Dashboard</span>
+            </a>
+            <a href="{% url 'admin:index' %}" class="admin-nav-link">
+                <span class="admin-nav-text">Accueil</span>
+            </a>
+        </nav>
+        
+        <!-- Informations utilisateur -->
+        <div class="admin-header-user">
+            {% if user.is_authenticated %}
+                <div class="admin-user-info">
+                    <span class="admin-user-name">
+                        {{ user.get_full_name|default:user.username }}
+                    </span>
+                    <a href="{% url 'admin:logout' %}" class="admin-logout-link" title="Déconnexion">
+                        <span class="admin-logout-text">Déconnexion</span>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'admin/css/custom_admin.css' %}">
+{% endblock %}
+
+{% block nav-global %}
+{{ block.super }}
+{% endblock %}

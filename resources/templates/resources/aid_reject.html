@@ -1,0 +1,32 @@
+{% extends "resources/base.html" %}
+
+{% block title %}Rejeter l'aide{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-white">
+                <h4 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Rejeter l'aide</h4>
+            </div>
+            <div class="card-body">
+                <p>Êtes-vous sûr de vouloir rejeter l'aide <strong>{{ aid.title }}</strong> ?</p>
+                <p class="text-muted">Cette action supprimera l'aide et notifiera l'utilisateur.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'resources:aid_detail' aid.pk %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Annuler
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-x-circle"></i> Rejeter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,153 @@
+{% extends "resources/base.html" %}
+{% load permissions %}
+
+{% block title %}Liste des aides{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0"><i class="bi bi-heart-fill text-danger"></i> Aides</h1>
+    <div class="d-flex gap-2">
+        {% if aids %}
+        {% with request.GET.urlencode as query_string %}
+        <a href="{% url 'resources:export_aids_pdf' %}{% if query_string %}?{{ query_string }}{% endif %}" 
+           class="btn btn-outline-primary" 
+           title="Exporter toutes les aides affichées en PDF">
+            <i class="bi bi-file-earmark-pdf"></i> Exporter en PDF
+        </a>
+        {% endwith %}
+        {% endif %}
+        {% if not user|is_user_admin and not user|is_user_organizer %}
+            <a href="{% url 'resources:aidrequest_create' %}" class="btn btn-outline-primary">
+                <i class="bi bi-plus-circle"></i> Demander une aide
+            </a>
+        {% endif %}
+        {% if user|is_user_organizer or user|is_user_admin %}
+            <a href="{% url 'resources:aid_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> {% if user|is_user_admin %}Ajouter{% else %}Proposer{% endif %} une aide
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Search and Filter Form -->
+<div class="card mb-4 search-card">
+    <div class="card-body">
+        <form method="get" action="{% url 'resources:aid_list' %}" class="row g-3">
+            <div class="col-md-4">
+                <label for="q" class="form-label fw-bold"><i class="bi bi-search"></i> Rechercher par titre</label>
+                <input type="text" class="form-control" id="q" name="q" 
+                       value="{{ search_query }}" placeholder="Titre de l'aide...">
+            </div>
+            <div class="col-md-3">
+                <label for="category" class="form-label fw-bold"><i class="bi bi-tag"></i> Catégorie</label>
+                <select class="form-select" id="category" name="category">
+                    <option value="">Toutes les catégories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" or selected_category == cat.id %}selected{% endif %}>
+                            {{ cat.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="club" class="form-label fw-bold"><i class="bi bi-people"></i> Club</label>
+                <select class="form-select" id="club" name="club">
+                    <option value="">Tous les clubs</option>
+                    {% for club in clubs %}
+                        <option value="{{ club.id }}" {% if selected_club == club.id|stringformat:"s" or selected_club == club.id %}selected{% endif %}>
+                            {{ club.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Rechercher
+                </button>
+            </div>
+        </form>
+        {% if search_query or selected_category or selected_club %}
+            <div class="mt-3">
+                <a href="{% url 'resources:aid_list' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Réinitialiser les filtres
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Aids List -->
+{% if aids %}
+    <div class="row g-4">
+        {% for aid in aids %}
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">
+                            <a href="{% url 'resources:aid_detail' aid.pk %}" class="text-decoration-none">
+                                {{ aid.title }}
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted small flex-grow-1">
+                            {{ aid.description|truncatewords:20 }}
+                        </p>
+                        <div class="mb-2">
+                            <span class="badge bg-primary">{{ aid.category.name }}</span>
+                            {% if aid.club %}
+                                <span class="badge bg-success"><i class="bi bi-people"></i> {{ aid.club.name }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="small text-muted mb-2">
+                            <i class="bi bi-person"></i> {{ aid.submitted_by.get_full_name|default:aid.submitted_by.username }}<br>
+                            <i class="bi bi-calendar"></i> {{ aid.date_submitted|date:"d/m/Y" }}
+                        </div>
+                        <div class="mt-auto">
+                            <a href="{% url 'resources:aid_detail' aid.pk %}" class="btn btn-sm btn-primary w-100">
+                                <i class="bi bi-eye"></i> Voir les détails
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_club %}&club={{ selected_club }}{% endif %}">Premier</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_club %}&club={{ selected_club }}{% endif %}">Précédent</a>
+                    </li>
+                {% endif %}
+                <li class="page-item active">
+                    <span class="page-link">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_club %}&club={{ selected_club }}{% endif %}">Suivant</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_club %}&club={{ selected_club }}{% endif %}">Dernier</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <div class="alert alert-info text-center">
+        <i class="bi bi-info-circle"></i> Aucune aide trouvée. 
+        {% if search_query or selected_category or selected_club %}
+            Essayez de modifier vos critères de recherche.
+        {% else %}
+            {% if user|is_user_organizer or user|is_user_admin %}
+                <a href="{% url 'resources:aid_create' %}" class="alert-link">Ajoutez-en une maintenant</a>.
+            {% endif %}
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

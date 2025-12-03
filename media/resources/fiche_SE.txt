@@ -1,0 +1,83 @@
+****Réunions scrum: selon le nombre des sprints (n)
+exp: 
+0) sprint0: etude et analyse globale du projet (spécification et analyse  de tout le projet: DCU, PB, diag de classes...)
+
+1) sprint1: réaliser la partie crud de l'app ( 
+*appliquer un modèle de cycle de vie; spéci du sprint1 (Sprint backlog), analyse (DCU raffiné), conception (D.seq.objets + diag de classes de conception), implémentation (démo de l'app ou captures d'écran+ diag de composants), test (cas de test), 
+*mettre en oeuvre des pratiques de scrum( réunions, indicateurs, artefacts)).
+
+2) sprint2: réaliser la partie avancée de l'app
+
+3) sprint3: réaliser la partie IA + intégration
+
+
+==> il existe 4 réunions scrum:
+
+** Sprint planning/ lancement du sprint: dépend de la durée du sprint Durée:(1/2 jr par phase en moyenne)
+-Quand? au début de chaque sprint
+-Qui? PO + SM + DEV TEAM (phase 1) 
+      SM + DEV TEAM (phase 2)
+-Objectif? compréhension du projet et répartition des tâches 
+-Déroulement? deux phases; 
+     1)phase du WHAT MEETING --> délimiter le périmètre fonctionnel-->        output: PRODUCT BACKLOG ,
+     2)phase du HOW MEETING--> répartition des tâches entre les membres        de l'équipe--> output: SPRINT BACKLOG
+
+** Daily Meeting/ Stand Up Meeting: 
+Durée: à ne pas dépasser 15 mins
+-Quand? chaque jr du sprint (face to face),  
+-Qui?  SM + DEV TEAM ,SM est l'animateur de cette réunion
+-Objectif? pr mesurer l'avancement, 
+-Déroulement? 3 questions à chaque membre (what i did yesterday?, what im going to do today? , problems faced?), 
+
+**Revue du sprint/ Sprint Review: 
+Durée: au max 2h
+-Quand? à la fin de chaque sprint 
+-Qui?  toutes les parties prenantes (clients, actionnaires, sm , ...)
+-Objectif?  démontrer le travail réalisé durant le sprint 
+-Déroulement? -le SM présente -au nom de son équipe- les                fonctionnalités  développées durant le sprint.
+              - collecte des remarques, des demandes de changement
+
+**Sprint Retrospective:
+Durée: au max 2h
+-Quand? à la fin de chaque sprint (directement après la sprint review)
+-Qui?  SM + DEV TEAM
+-Objectif?  évaluation du déroulement du sprint
+-Déroulement? chaque membre répond à 3 questions:
+              - what worked?
+              - what didn't work?
+              - les idées d'amélioration ?
+
+
+
+**** Indicateurs Scrum : indicateurs de progression du travail 
+
+1) Table Blanc: à travers format papier/ numérique (trello, jira, github...)
+TO DO          |  DOING  |  DONE   
+---------------|---------|-------
+ID-tâche       |         | 
+intitulé tâche |         | 
+E=1h R=A       |         | 
+
+                 
+2) Burndown Chart: 2 axes; x= durée du sprint/ y=la charge du travail (total des estimations), exp d'outil: extension burndown chart for trello 
+Exemple: on pose une charge de travail de 80h pendant 14 jrs--> la courbe idéale doit être un segment décroissant de 80 vers 0 et on fait la projection des points (selon cette projection on interprète; en retard, il y a avancement etc...), la courbe réelle est sous forme d'onde ( Rq: le jour de la validation on doit présenter la courbe réelle)
+
+
+**** Sprint Backlog:
+ID_US       User Story            Id_T       tâches                                 estimations(h)    responsable
+---------------------------------------------------------------------------------------------------------------
+5.2         en tant que coach     5.2.1-----Créer interface PlanifCours.html.twig        1
+            je veux planifier     5.2.2-----Implémenter la méthode AddCours              2
+            un cours                        dans le contrôleur cours.php           
+                                  5.2.3-----Créer entité Cours                           1
+                                  5.2.4-----Tester la planification d'un cours           1
+
+
+NB: les tâches doivent être spécifiques: à la user story, technologie, architecture logique.
+
+
+
+
+
+
+
