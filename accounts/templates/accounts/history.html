@@ -1,0 +1,189 @@
+{% extends "accounts/base.html" %}
+{% load static %}
+{% block title %}Historique{% endblock %}
+
+{% block content %}
+<style>
+body {
+    background: #f0f2f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.page-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar fixe bleu foncé */
+.sidebar {
+    width: 250px;
+    background-color: #004080;
+    color: #fff;
+    padding-top: 60px;
+    padding-left: 20px;
+    padding-right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 1000;
+}
+
+.sidebar h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.sidebar a {
+    color: #fff;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background-color: #00264d;
+    transform: scale(1.02);
+}
+
+/* Contenu principal */
+.main-content {
+    flex: 1;
+    padding: 30px;
+    margin-left: 250px;
+}
+
+/* Table styles */
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.history-table th, .history-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+.history-table th {
+    background-color: #004080;
+    color: #fff;
+}
+
+.button-pdf {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #004080;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-right: 5px;
+    font-size: 0.9em;
+}
+
+.button-pdf:hover {
+    background-color: #00264d;
+}
+
+.comment {
+    background-color: #e8f0fe;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+</style>
+
+<div class="page-container">
+    <div class="sidebar">
+        <h3>Navigation</h3>
+        <a href="{% url 'profile' %}">Profil</a>
+        <a href="{% url 'user_history' %}" class="active">Historique</a>
+        <a href="{% url 'dashboard' %}">Mes Clubs</a>
+        <a href="{% url 'dashboard' %}">Évènements</a>
+        <a href="{% url 'dashboard' %}">Forums</a>
+        <a href="{% url 'dashboard' %}">Aides</a>
+        <a href="{% url 'dashboard' %}">Ressources</a>
+        <a href="{% url 'chatbot' %}">Chatbot</a>
+    </div>
+
+    <div class="main-content">
+        <h2 style="color:#004080;">Historique d’adhésions et contributions</h2>
+
+        <h4>Adhésions</h4>
+        <table class="history-table">
+            <tr>
+                <th>Club</th>
+                <th>Date d'adhésion</th>
+                <th>Générer PDF</th>
+                <th>Télécharger PDF</th>
+            </tr>
+            {% if memberships %}
+                {% for m in memberships %}
+                <tr>
+                    <td>{{ m.club.name }}</td>
+                    <td>{{ m.joined_at }}</td>
+                    <td><a href="#" class="button-pdf">Générer PDF</a></td>
+                    <td><a href="#" class="button-pdf">Télécharger PDF</a></td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <!-- Exemples statiques -->
+                <tr>
+                    <td>Club de Robotique</td>
+                    <td>2025-01-15</td>
+                    <td><a href="#" class="button-pdf">Générer PDF</a></td>
+                    <td><a href="#" class="button-pdf">Télécharger PDF</a></td>
+                </tr>
+                <tr>
+                    <td>Club Photographie</td>
+                    <td>2025-02-10</td>
+                    <td><a href="#" class="button-pdf">Générer PDF</a></td>
+                    <td><a href="#" class="button-pdf">Télécharger PDF</a></td>
+                </tr>
+                <tr>
+                    <td>Club Théâtre</td>
+                    <td>2025-03-05</td>
+                    <td><a href="#" class="button-pdf">Générer PDF</a></td>
+                    <td><a href="#" class="button-pdf">Télécharger PDF</a></td>
+                </tr>
+            {% endif %}
+        </table>
+
+        <h4>Contributions</h4>
+        <table class="history-table">
+            <tr>
+                <th>Titre</th>
+                <th>Date</th>
+            </tr>
+            {% if contributions %}
+                {% for c in contributions %}
+                <tr>
+                    <td>{{ c.title }}</td>
+                    <td>{{ c.created_at }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <!-- Exemples statiques -->
+                <tr><td>Organisation Atelier Robotique</td><td>2025-01-20</td></tr>
+                <tr><td>Animation Forum Étudiant</td><td>2025-02-12</td></tr>
+                <tr><td>Participation Exposition Photos</td><td>2025-03-08</td></tr>
+            {% endif %}
+        </table>
+
+        <h4>Commentaires</h4>
+        <div class="comment">Super atelier, très instructif !</div>
+        <div class="comment">Merci pour l’organisation du forum.</div>
+        <div class="comment">J’ai adoré l’exposition, bravo aux membres !</div>
+    </div>
+</div>
+{% endblock %}

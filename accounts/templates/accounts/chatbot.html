@@ -1,0 +1,206 @@
+{% extends "accounts/base.html" %}
+{% load static %}
+{% block title %}Chatbot{% endblock %}
+
+{% block content %}
+<style>
+body {
+    background: #f0f2f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.page-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #004080;
+    color: #fff;
+    padding-top: 60px;
+    padding-left: 20px;
+    padding-right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 1000;
+}
+
+.sidebar h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.sidebar a {
+    color: #fff;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background-color: #00264d;
+    transform: scale(1.02);
+}
+
+.main-content {
+    flex: 1;
+    padding: 30px;
+    margin-left: 250px;
+}
+
+.chatbox {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.chatbox h2 {
+    color: #004080;
+    text-align: center;
+}
+
+.message {
+    padding: 10px 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    max-width: 80%;
+}
+
+.message.user {
+    background-color: #004080;
+    color: #fff;
+    align-self: flex-end;
+}
+
+.message.bot {
+    background-color: #e0e0e0;
+    color: #000;
+    align-self: flex-start;
+}
+
+.chat-history {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.chat-form {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-form input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+}
+
+.chat-form button {
+    background-color: #004080;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.chat-form button:hover {
+    background-color: #00264d;
+}
+
+@media (max-width: 900px) {
+    .page-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding-top: 20px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .sidebar a {
+        flex: 1 1 40%;
+        margin: 5px;
+        text-align: center;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+}
+</style>
+
+<div class="page-container">
+    <div class="sidebar">
+        <h3>Navigation</h3>
+        <a href="{% url 'profile' %}">Profil</a>
+        <a href="{% url 'user_history' %}">Historique</a>
+        <a href="{% url 'dashboard' %}">Mes Clubs</a>
+        <a href="{% url 'dashboard' %}">Évènements</a>
+        <a href="{% url 'dashboard' %}">Forums</a>
+        <a href="{% url 'dashboard' %}">Aides</a>
+        <a href="{% url 'dashboard' %}">Ressources</a>
+        <a href="{% url 'chatbot' %}" class="active">Chatbot</a>
+    </div>
+
+    <div class="main-content">
+        <div class="chatbox">
+            <h2>Chatbot</h2>
+
+            <!-- Historique de conversation déjà existante -->
+            <div class="chat-history">
+                <div class="message bot">
+                    Bonjour ! Si tu cherches un club sympa, je te recommande le club <strong>Photographie</strong> créé dans ton historique.
+                </div>
+                <div class="message user">
+                    Merci ! Comment puis-je m'y inscrire ?
+                </div>
+                <div class="message bot">
+                    Tu peux rejoindre le club par recherche dans le menu "Clubs", si tu veut je peut te donner un lien.
+                </div>
+            </div>
+
+            <!-- Formulaire pour envoyer une nouvelle question -->
+            <form method="POST" class="chat-form">
+                {% csrf_token %}
+                <input type="text" name="question" placeholder="Pose une question au chatbot..." required>
+                <button type="submit">Envoyer</button>
+            </form>
+
+            <!-- Réponse du bot si existante -->
+            {% if answer %}
+                <div class="chat-history" style="margin-top:10px;">
+                    <div class="message bot">{{ answer }}</div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}
