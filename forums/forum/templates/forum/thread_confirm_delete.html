@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Supprimer le sujet — MonForum{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Style suppression d'un sujet — harmonisation avec base.html thème sombre */
+
+.card {
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+}
+
+.card.border-danger {
+  border-color: #dc3545 !important;
+}
+
+.card-body {
+  padding: 24px;
+  color: #fff;
+}
+
+.card-title.text-danger {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.bg-light {
+  background: rgba(255,255,255,0.08) !important;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.text-muted {
+  color: rgba(255,255,255,0.6) !important;
+}
+
+p {
+  color: #f8f9fa;
+}
+
+button.btn, a.btn {
+  border-radius: 10px;
+  padding: 6px 16px;
+}
+
+button.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+button.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+a.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+a.btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+form .d-flex {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card border-danger">
+      <div class="card-body">
+        <h4 class="card-title text-danger">Confirmation de suppression</h4>
+        <p>Es-tu sûr(e) de vouloir supprimer le sujet suivant ? Cette action est irréversible.</p>
+
+        <div class="bg-light mb-3">
+          <strong>{{ object.title }}</strong>
+          <div class="text-muted small">par {{ object.author.username }} — {{ object.created_at|date:"d M Y H:i" }}</div>
+          <p class="mt-2" style="white-space: pre-wrap;">{{ object.content|linebreaksbr }}</p>
+        </div>
+
+        <form method="post" class="d-flex">
+          {% csrf_token %}
+          <a class="btn btn-secondary" href="{% url 'forum:thread-detail' object.pk %}">Annuler</a>
+          <button type="submit" class="btn btn-danger">Supprimer définitivement</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

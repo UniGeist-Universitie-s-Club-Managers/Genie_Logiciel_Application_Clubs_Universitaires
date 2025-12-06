@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{% if form.instance.pk %}Modifier le sujet{% else %}Nouveau sujet{% endif %} — MonForum{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title mb-3">{% if form.instance.pk %}Modifier le sujet{% else %}Nouveau sujet{% endif %}</h4>
+        <form method="post">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          
+          <div class="mb-3">
+            <label class="form-label">{{ form.forum.label }}</label>
+            {{ form.forum.errors }}
+            {{ form.forum }}
+            <div class="form-text">Choisis le forum dans lequel publier ce sujet.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Titre</label>
+            {{ form.title.errors }}
+            {{ form.title }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Contenu</label>
+            {{ form.body.errors }}
+            {{ form.body }}
+            <div class="form-text">Tu peux utiliser plusieurs lignes. Le texte sera affiché avec des sauts de ligne préservés.</div>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'forum:thread-list' %}" class="btn btn-link">Annuler</a>
+            <button class="btn btn-primary" type="submit">{% if form.instance.pk %}Enregistrer{% else %}Publier{% endif %}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
