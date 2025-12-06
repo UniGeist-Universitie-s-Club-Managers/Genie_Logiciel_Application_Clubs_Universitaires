@@ -165,13 +165,12 @@ class PostForm(forms.ModelForm):
         self.thread = kwargs.pop('thread', None)
         self.user = kwargs.pop('user', None)
 
-        # Remove any unknown keys (like 'thread') from POST data
+        # Remove 'thread' from POST data if present (defensive)
         if args and hasattr(args[0], 'copy'):
             data = args[0]
             mutable = data.copy()
-            for key in list(mutable.keys()):
-                if key not in self._meta.fields and key != 'csrfmiddlewaretoken':
-                    mutable.pop(key)
+            if 'thread' in mutable:
+                mutable.pop('thread')
             args = (mutable,) + args[1:]
         super().__init__(*args, **kwargs)
 
