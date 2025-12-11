@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Demander une ressource ou une aide{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-file-earmark-plus"></i> Demander une ressource ou une aide</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> <strong>Information :</strong> 
+                    Si la ressource ou l'aide que vous recherchez n'existe pas, vous pouvez la demander ici. 
+                    Un administrateur examinera votre demande et pourra l'ajouter au système.
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.type.id_for_label }}" class="form-label fw-bold">
+                            <i class="bi bi-tag"></i> {{ form.type.label }}
+                        </label>
+                        {{ form.type }}
+                        {% if form.type.errors %}
+                            <div class="text-danger small">{{ form.type.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label fw-bold">
+                            <i class="bi bi-card-text"></i> {{ form.description.label }}
+                        </label>
+                        {{ form.description }}
+                        <div class="form-text">Décrivez en détail la ressource ou l'aide que vous souhaitez.</div>
+                        {% if form.description.errors %}
+                            <div class="text-danger small">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'resources:resource_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Soumettre la demande
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

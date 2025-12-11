@@ -1,0 +1,17 @@
+{% extends "resources/base.html" %}
+
+{% block title %}{% if object %}Modifier{% else %}Créer{% endif %} une demande d'aide{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">{% if object %}Modifier{% else %}Créer{% endif %} une demande d'aide</h1>
+
+<form method="post" class="card card-body">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="d-flex justify-content-end gap-2">
+        <a href="{% url 'resources:aidrequest_list' %}" class="btn btn-outline-secondary">Annuler</a>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </div>
+</form>
+{% endblock %}
+

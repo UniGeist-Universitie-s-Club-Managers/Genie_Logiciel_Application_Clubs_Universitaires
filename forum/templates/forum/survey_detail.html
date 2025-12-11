@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ survey.title }} — MonForum{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Page détails sondage — style sombre */
+
+.survey-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Card */
+.card {
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+
+/* Card header */
+.card-header {
+  background: rgba(33,37,41,0.8);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: #fff;
+}
+
+.card-header h5 {
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Card body */
+.card-body {
+  padding: 24px;
+  color: #fff;
+}
+
+/* Alert */
+.alert {
+  border-radius: 10px;
+}
+
+/* Progress bar */
+.progress {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  font-weight: 600;
+  line-height: 25px;
+}
+
+/* Buttons */
+.btn-outline-secondary, .btn-outline-danger {
+  border-radius: 10px;
+  padding: 5px 12px;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .d-flex.justify-content-between { flex-direction: column; align-items: start; gap: 12px; }
+  .btn { width: 100%; margin-bottom: 6px; }
+  .card-body { padding: 18px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="survey-container">
+  <!-- Header -->
+  <div class="mb-3 d-flex justify-content-between align-items-start">
+    <div>
+      <h2 class="mb-1">{{ survey.title }}</h2>
+      {% if survey.description %}
+        <p class="text-muted">{{ survey.description }}</p>
+      {% endif %}
+      <div class="text-muted small">
+        par {{ survey.author.username }} — {{ survey.created_at|date:"d M Y H:i" }}
+        {% if survey.forum %}
+          dans <a href="{% url 'forum:forum-detail' survey.forum.pk %}">{{ survey.forum.title }}</a>
+        {% endif %}
+      </div>
+      {% if survey.closes_at %}
+        <div class="text-muted small mt-1">
+          <strong>Clôture :</strong> {{ survey.closes_at|date:"d M Y H:i" }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="text-end">
+      {% if can_manage_survey %}
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'forum:survey-update' survey.pk %}">Modifier</a>
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'forum:survey-delete' survey.pk %}">Supprimer</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Résultats -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">Résultats ({{ total_votes }} vote{{ total_votes|pluralize }})</h5>
+    </div>
+    <div class="card-body">
+      {% if options_with_votes %}
+        {% for item in options_with_votes %}
+          <div class="mb-3">
+            <div class="d-flex justify-content-between mb-1">
+              <span>{{ item.option.text }}</span>
+              <span class="text-muted">{{ item.vote_count }} vote{{ item.vote_count|pluralize }} ({{ item.percentage }}%)</span>
+            </div>
+            <div class="progress" style="height: 25px;">
+              <div class="progress-bar bg-success" role="progressbar" style="width: {{ item.percentage }}%;" aria-valuenow="{{ item.percentage }}" aria-valuemin="0" aria-valuemax="100">
+                {% if item.percentage > 10 %}{{ item.percentage }}%{% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="alert alert-info">
+          Aucune option n'a été ajoutée à ce sondage.
+          {% if user == survey.author or user.is_staff %}
+            Vous pouvez en ajouter en modifiant le sondage.
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Formulaire de vote -->
+  
+    {% if can_vote and not user_has_voted and options_with_votes %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5>Voter</h5>
+      <form method="post" action="{% url 'forum:survey-vote' survey.pk %}">
+        {% csrf_token %}
+        {% for option in survey.options.all %}
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="radio" 
+                   name="option" id="option{{ option.pk }}" 
+                   value="{{ option.pk }}" required>
+            <label class="form-check-label" for="option{{ option.pk }}">
+              {{ option.text }}
+            </label>
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-success mt-2">
+          <i class="fas fa-vote-yea me-1"></i> Voter
+        </button>
+      </form>
+    </div>
+  </div>
+{% elif user_has_voted %}
+  <div class="alert alert-success">
+    <i class="fas fa-check-circle me-2"></i>
+    <strong>Merci !</strong> Vous avez déjà voté pour ce sondage.
+  </div>
+{% elif not can_vote and user.is_authenticated %}
+  <div class="alert alert-warning">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    Vous ne pouvez pas voter pour ce sondage.
+  </div>
+{% endif %}
+
+  <a class="btn btn-link mt-3" href="{% url 'forum:survey-list' %}">&larr; Retour aux sondages</a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(function (el) {
+    try { new bootstrap.Tooltip(el); } catch(e) {}
+  });
+});
+</script>
+{% endblock %}

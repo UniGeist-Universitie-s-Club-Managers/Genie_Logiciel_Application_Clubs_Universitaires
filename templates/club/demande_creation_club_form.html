@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if object %}Modifier la Demande{% else %}Créer une Demande{% endif %}{% endblock %}
+
+{% block hero_title %}{% if object %}Modifier la Demande{% else %}Créer une Nouvelle Demande{% endif %}{% endblock %}
+{% block hero_subtitle %}Remplissez le formulaire pour {% if object %}mettre à jour{% else %}créer{% endif %} votre demande de club{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">
+                        <i class="fas fa-{% if object %}edit{% else %}plus{% endif %}"></i> 
+                        {% if object %}Modifier la Demande{% else %}Créer une Nouvelle Demande{% endif %}
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">
+                                <i class="fas fa-check-circle text-success"></i> {{ field.label }}
+                                {% if field.field.required %}
+                                <span class="text-danger">*</span>
+                                {% endif %}
+                            </label>
+                            
+                            {% if field.widget.input_type == "textarea" %}
+                                <textarea 
+                                    class="form-control {% if field.errors %}is-invalid{% endif %}" 
+                                    id="{{ field.id_for_label }}" 
+                                    name="{{ field.name }}"
+                                    rows="4"
+                                    placeholder="{{ field.label }}">{{ field.value|default:"" }}</textarea>
+                            {% else %}
+                                <input 
+                                    type="{{ field.widget.input_type }}" 
+                                    class="form-control {% if field.errors %}is-invalid{% endif %}" 
+                                    id="{{ field.id_for_label }}" 
+                                    name="{{ field.name }}"
+                                    value="{{ field.value|default:"" }}"
+                                    placeholder="{{ field.label }}">
+                            {% endif %}
+                            
+                            {% if field.help_text %}
+                            <small class="form-text text-muted d-block mt-1">{{ field.help_text|safe }}</small>
+                            {% endif %}
+                            
+                            {% if field.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in field.errors %}
+                                    <i class="fas fa-exclamation-circle"></i> {{ error }}<br>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Enregistrer
+                            </button>
+                            <a href="{% url 'demande_list_view' %}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

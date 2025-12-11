@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load permissions %}
+
+{% block title %}{{ aid.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">{{ aid.title }}</h1>
+    <div class="d-flex gap-2">
+        {% if user.is_authenticated %}
+            {% if is_favorite %}
+                <form method="post" action="{% url 'resources:aid_favorite' aid.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-warning">
+                        <i class="bi bi-star-fill"></i> Retirer des favoris
+                    </button>
+                </form>
+            {% else %}
+                <form method="post" action="{% url 'resources:aid_favorite' aid.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-star"></i> Ajouter aux favoris
+                    </button>
+                </form>
+            {% endif %}
+        {% endif %}
+        {% if user|is_user_admin %}
+            <a href="{% url 'resources:aid_update' aid.pk %}" class="btn btn-outline-secondary">Modifier</a>
+            <a href="{% url 'resources:aid_delete' aid.pk %}" class="btn btn-outline-danger">Supprimer</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Catégorie</dt>
+            <dd class="col-sm-9"><span class="badge bg-primary">{{ aid.category.name }}</span></dd>
+
+            {% if aid.club %}
+            <dt class="col-sm-3">Club</dt>
+            <dd class="col-sm-9"><span class="badge bg-success"><i class="bi bi-people"></i> {{ aid.club.name }}</span></dd>
+            {% endif %}
+
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">{{ aid.description|linebreaks }}</dd>
+
+            {% if aid.file %}
+            <dt class="col-sm-3">Fichier</dt>
+            <dd class="col-sm-9">
+                {% if aid.is_validated or user|is_user_admin %}
+                    <a href="{{ aid.file.url }}" class="btn btn-primary" download>
+                        <i class="bi bi-download"></i> Télécharger le fichier
+                    </a>
+                {% else %}
+                    <span class="text-muted">
+                        <i class="bi bi-clock-history"></i> Fichier en attente de validation
+                    </span>
+                {% endif %}
+            </dd>
+            {% endif %}
+            
+            {% if user|is_user_admin %}
+            <dt class="col-sm-3">Statut</dt>
+            <dd class="col-sm-9">
+                {% if aid.is_validated %}
+                    <span class="badge bg-success">Validée</span>
+                {% else %}
+                    <span class="badge bg-warning">En attente de validation</span>
+                    <form method="post" action="{% url 'resources:aid_validate' aid.pk %}" class="d-inline ms-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-success">
+                            <i class="bi bi-check-circle"></i> Valider
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'resources:aid_reject' aid.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir rejeter cette aide ?');">
+                            <i class="bi bi-x-circle"></i> Rejeter
+                        </button>
+                    </form>
+                {% endif %}
+            </dd>
+            {% endif %}
+
+            <dt class="col-sm-3">Soumis par</dt>
+            <dd class="col-sm-9">{{ aid.submitted_by.get_full_name|default:aid.submitted_by.username }}</dd>
+
+            <dt class="col-sm-3">Date</dt>
+            <dd class="col-sm-9">{{ aid.date_submitted|date:"d/m/Y H:i" }}</dd>
+        </dl>
+    </div>
+</div>
+
+<a href="{% url 'resources:aid_list' %}" class="btn btn-link mt-3">&larr; Retour à la liste</a>
+{% endblock %}

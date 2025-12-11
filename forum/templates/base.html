@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}{% block page_title %}Forum{% endblock %}{% endblock %}
+
+{% block hero_title %}Forum de Discussion{% endblock %}
+{% block hero_subtitle %}Échangez avec la communauté universitaire{% endblock %}
+
+{% block content %}
+<!-- Forum Navigation -->
+<div class="row mb-4">
+  <div class="col-12">
+    <nav aria-label="Forum navigation">
+      <ul class="nav nav-pills justify-content-center">
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'thread-list' %}active{% endif %}" href="{% url 'forum:thread-list' %}">
+            <i class="fas fa-stream me-1"></i> Threads
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'forum-list' %}active{% endif %}" href="{% url 'forum:forum-list' %}">
+            <i class="fas fa-layer-group me-1"></i> Forums
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'survey-list' %}active{% endif %}" href="{% url 'forum:survey-list' %}">
+            <i class="fas fa-poll me-1"></i> Sondages
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Forum Content -->
+{% block forum_content %}{% endblock %}
+
+{% endblock %}

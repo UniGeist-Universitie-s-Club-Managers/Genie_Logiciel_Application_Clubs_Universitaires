@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Demande pour {{ aidrequest.aid.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">Demande pour {{ aidrequest.aid.title }}</h1>
+    <div>
+        <a href="{% url 'resources:aidrequest_update' aidrequest.pk %}" class="btn btn-outline-secondary">Modifier</a>
+        <a href="{% url 'resources:aidrequest_delete' aidrequest.pk %}" class="btn btn-outline-danger">Supprimer</a>
+    </div>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Demandeur</dt>
+    <dd class="col-sm-9">{{ aidrequest.applicant }}</dd>
+
+    <dt class="col-sm-3">Justification</dt>
+    <dd class="col-sm-9">{{ aidrequest.justification|linebreaks }}</dd>
+
+    <dt class="col-sm-3">Statut</dt>
+    <dd class="col-sm-9">
+        <span class="badge
+            {% if aidrequest.status == 'approved' %}text-bg-success
+            {% elif aidrequest.status == 'rejected' %}text-bg-danger
+            {% else %}text-bg-warning text-dark{% endif %}">
+            {{ aidrequest.get_status_display }}
+        </span>
+    </dd>
+
+    <dt class="col-sm-3">Soumise le</dt>
+    <dd class="col-sm-9">{{ aidrequest.date_submitted|date:"d/m/Y H:i" }}</dd>
+</dl>
+
+<a href="{% url 'resources:aidrequest_list' %}" class="btn btn-link">&larr; Retour à la liste</a>
+{% endblock %}
+

@@ -1,0 +1,42 @@
+DECLARE
+  CURSOR c_dept110 IS
+    SELECT salary FROM employees WHERE department_id = 110;
+
+  CURSOR c_dept50 IS
+    SELECT salary FROM employees WHERE department_id = 50;
+
+  v_somme_110 NUMBER := 0;
+  v_somme_50  NUMBER := 0;
+  v_sal       employees.salary%TYPE;
+BEGIN
+  -- Calcul somme salaires département 110
+  OPEN c_dept110;
+  LOOP
+    FETCH c_dept110 INTO v_sal;
+    EXIT WHEN c_dept110%NOTFOUND;
+    v_somme_110 := v_somme_110 + v_sal;
+  END LOOP;
+  CLOSE c_dept110;
+
+  -- Calcul somme salaires département 50
+  OPEN c_dept50;
+  LOOP
+    FETCH c_dept50 INTO v_sal;
+    EXIT WHEN c_dept50%NOTFOUND;
+    v_somme_50 := v_somme_50 + v_sal;
+  END LOOP;
+  CLOSE c_dept50;
+
+  -- Comparaison
+  DBMS_OUTPUT.PUT_LINE('Somme salaires dept 110 : ' || v_somme_110);
+  DBMS_OUTPUT.PUT_LINE('Somme salaires dept 50  : ' || v_somme_50);
+
+  IF v_somme_110 > v_somme_50 THEN
+    DBMS_OUTPUT.PUT_LINE('Le département 110 a une somme de salaires plus élevée.');
+  ELSIF v_somme_110 < v_somme_50 THEN
+    DBMS_OUTPUT.PUT_LINE('Le département 50 a une somme de salaires plus élevée.');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('Les deux départements ont la même somme de salaires.');
+  END IF;
+END;
+/

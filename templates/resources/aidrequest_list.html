@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Demandes d'aide{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">Demandes d'aide</h1>
+    <a href="{% url 'resources:aidrequest_create' %}" class="btn btn-primary">Soumettre une demande</a>
+</div>
+
+{% if aidrequests %}
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Aide</th>
+                    <th>Demandeur</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aidrequest in aidrequests %}
+                    <tr>
+                        <td><a href="{% url 'resources:aidrequest_detail' aidrequest.pk %}">{{ aidrequest.aid.title }}</a></td>
+                        <td>{{ aidrequest.applicant }}</td>
+                        <td>
+                            <span class="badge
+                                {% if aidrequest.status == 'approved' %}text-bg-success
+                                {% elif aidrequest.status == 'rejected' %}text-bg-danger
+                                {% else %}text-bg-warning text-dark{% endif %}">
+                                {{ aidrequest.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ aidrequest.date_submitted|date:"d/m/Y H:i" }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'resources:aidrequest_update' aidrequest.pk %}" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                            <a href="{% url 'resources:aidrequest_delete' aidrequest.pk %}" class="btn btn-sm btn-outline-danger">Supprimer</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">Aucune demande pour le moment.</div>
+{% endif %}
+{% endblock %}
+

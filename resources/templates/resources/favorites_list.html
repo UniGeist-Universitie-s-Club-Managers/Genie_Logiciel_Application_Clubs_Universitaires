@@ -1,0 +1,160 @@
+{% extends "resources/base.html" %}
+{% load permissions %}
+
+{% block title %}Mes favoris{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0"><i class="bi bi-star-fill text-warning"></i> Mes favoris</h1>
+</div>
+
+<!-- Search and Filter Form -->
+<div class="card mb-4 search-card">
+    <div class="card-body">
+        <form method="get" action="{% url 'resources:favorites_list' %}" class="row g-3">
+            <div class="col-md-6">
+                <label for="q" class="form-label fw-bold"><i class="bi bi-search"></i> Rechercher par titre</label>
+                <input type="text" class="form-control" id="q" name="q" 
+                       value="{{ search_query }}" placeholder="Titre de la ressource ou de l'aide...">
+            </div>
+            <div class="col-md-4">
+                <label for="type" class="form-label fw-bold"><i class="bi bi-filter"></i> Type</label>
+                <select class="form-select" id="type" name="type">
+                    <option value="">Tous</option>
+                    <option value="resources" {% if selected_type == 'resources' %}selected{% endif %}>Ressources</option>
+                    <option value="aids" {% if selected_type == 'aids' %}selected{% endif %}>Aides</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Rechercher
+                </button>
+            </div>
+        </form>
+        {% if search_query or selected_type %}
+            <div class="mt-3">
+                <a href="{% url 'resources:favorites_list' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Réinitialiser les filtres
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Favorites List -->
+{% if favorites %}
+    <div class="row g-4">
+        {% for favorite in favorites %}
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">
+                                {% if favorite.resource %}
+                                    <a href="{% url 'resources:resource_detail' favorite.resource.pk %}" class="text-decoration-none">
+                                        {{ favorite.resource.title }}
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'resources:aid_detail' favorite.aid.pk %}" class="text-decoration-none">
+                                        {{ favorite.aid.title }}
+                                    </a>
+                                {% endif %}
+                            </h5>
+                            <span class="badge {% if favorite.resource %}bg-primary{% else %}bg-danger{% endif %}">
+                                {% if favorite.resource %}
+                                    <i class="bi bi-folder"></i> Ressource
+                                {% else %}
+                                    <i class="bi bi-heart"></i> Aide
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <p class="card-text text-muted small flex-grow-1">
+                            {% if favorite.resource %}
+                                {{ favorite.resource.description|truncatewords:20 }}
+                            {% else %}
+                                {{ favorite.aid.description|truncatewords:20 }}
+                            {% endif %}
+                        </p>
+                        
+                        <div class="mb-2">
+                            {% if favorite.resource %}
+                                <span class="badge bg-secondary">{{ favorite.resource.category.name }}</span>
+                                {% if favorite.resource.club %}
+                                    <span class="badge bg-success"><i class="bi bi-people"></i> {{ favorite.resource.club.name }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-secondary">{{ favorite.aid.category.name }}</span>
+                                {% if favorite.aid.club %}
+                                    <span class="badge bg-success"><i class="bi bi-people"></i> {{ favorite.aid.club.name }}</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="small text-muted mb-2">
+                            <i class="bi bi-calendar"></i> Ajouté le {{ favorite.created_at|date:"d/m/Y" }}
+                        </div>
+                        
+                        <div class="mt-auto d-flex gap-2">
+                            {% if favorite.resource %}
+                                <a href="{% url 'resources:resource_detail' favorite.resource.pk %}" class="btn btn-sm btn-primary flex-grow-1">
+                                    <i class="bi bi-eye"></i> Voir les détails
+                                </a>
+                                <a href="{% url 'resources:resource_favorite' favorite.resource.pk %}" class="btn btn-sm btn-outline-warning" title="Retirer des favoris">
+                                    <i class="bi bi-star-fill"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'resources:aid_detail' favorite.aid.pk %}" class="btn btn-sm btn-primary flex-grow-1">
+                                    <i class="bi bi-eye"></i> Voir les détails
+                                </a>
+                                <a href="{% url 'resources:aid_favorite' favorite.aid.pk %}" class="btn btn-sm btn-outline-warning" title="Retirer des favoris">
+                                    <i class="bi bi-star-fill"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}">Premier</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}">Précédent</a>
+                    </li>
+                {% endif %}
+                <li class="page-item active">
+                    <span class="page-link">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}">Suivant</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}">Dernier</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <div class="alert alert-info text-center">
+        <i class="bi bi-info-circle"></i> Vous n'avez aucun favori pour le moment.
+        {% if search_query or selected_type %}
+            Essayez de modifier vos critères de recherche.
+        {% else %}
+            <br>
+            <a href="{% url 'resources:resource_list' %}" class="alert-link">Parcourez les ressources</a> ou 
+            <a href="{% url 'resources:aid_list' %}" class="alert-link">les aides</a> pour en ajouter.
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}
+

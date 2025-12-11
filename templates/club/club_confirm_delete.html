@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmer la Suppression{% endblock %}
+
+{% block hero_title %}Suppression du Club{% endblock %}
+{% block hero_subtitle %}Êtes-vous sûr de vouloir supprimer ce club ?{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h2 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Attention
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-circle"></i> <strong>Êtes-vous sûr ?</strong>
+                    </div>
+                    <p class="text-muted">
+                        Vous êtes sur le point de supprimer le club : <strong>"{{ object.name }}"</strong>
+                    </p>
+                    <p class="text-warning">
+                        <i class="fas fa-info-circle"></i> Cette action est irréversible et supprimera toutes les données associées au club.
+                    </p>
+                </div>
+                <div class="card-footer bg-light">
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="fas fa-check"></i> Confirmer la Suppression
+                        </button>
+                    </form>
+                    <a href="{% url 'club_list_view' %}" class="btn btn-secondary btn-lg ms-2">
+                        <i class="fas fa-times"></i> Annuler
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

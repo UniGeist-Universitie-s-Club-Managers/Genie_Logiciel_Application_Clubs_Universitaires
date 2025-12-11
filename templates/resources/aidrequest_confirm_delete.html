@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer la demande{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">Supprimer la demande d'aide</h1>
+<p>Êtes-vous sûr de vouloir supprimer cette demande pour <strong>{{ object.aid.title }}</strong> ?</p>
+
+<form method="post" class="d-flex gap-2">
+    {% csrf_token %}
+    <a href="{% url 'resources:aidrequest_detail' object.pk %}" class="btn btn-outline-secondary">Annuler</a>
+    <button type="submit" class="btn btn-danger">Supprimer</button>
+</form>
+{% endblock %}
+

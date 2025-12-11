@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Supprimer la réponse — UniForum{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Delete reply — styles harmonisés avec le thème sombre */
+
+/* Container */
+.delete-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Danger card */
+.card.border-danger {
+  border: 1px solid rgba(220,53,69,0.18);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12));
+  box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Header */
+.card-header.bg-danger {
+  background: linear-gradient(90deg, rgba(220,53,69,0.95), rgba(180,40,50,0.95));
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.card-header h3 {
+  margin: 0;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Body */
+.card-body {
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  padding: 24px;
+}
+
+.alert.alert-warning {
+  background: linear-gradient(90deg, rgba(255,193,7,0.06), rgba(255,193,7,0.03));
+  color: #fff;
+  border-left: 4px solid #ffc107;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+}
+
+/* Reply summary card */
+.reply-summary {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 14px;
+  color: rgba(255,255,255,0.95);
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.reply-meta {
+  color: rgba(255,255,255,0.72);
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+/* Reply content */
+.reply-content {
+  background: rgba(0,0,0,0.45);
+  border-radius: 8px;
+  padding: 12px;
+  color: rgba(255,255,255,0.92);
+  white-space: pre-wrap;
+  line-height: 1.45;
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+/* Buttons */
+.form-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+  border: none;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 10px;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 10px;
+}
+
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.06);
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .card-body { padding: 18px; }
+  .form-actions { flex-direction: column; }
+  .btn { width: 100%; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="delete-container">
+  <div class="card border-danger">
+    <div class="card-header bg-danger">
+      <h3 class="mb-0">Confirmer la suppression</h3>
+    </div>
+
+    <div class="card-body">
+      <div class="alert alert-warning" role="alert">
+        <strong>Attention !</strong> Cette action est <strong>irréversible</strong>.
+      </div>
+
+      <div class="mb-3">
+        <h5 class="mb-2">Réponse à supprimer :</h5>
+
+        <div class="reply-summary">
+          <div class="reply-meta mb-2">
+            <strong>Auteur :</strong> {{ object.author.get_full_name|default:object.author.username }}
+            &nbsp; &middot; &nbsp;
+            <strong>Date :</strong> {{ object.created_at|date:"d M Y H:i" }}
+            {% if object.thread %}
+              &nbsp; &middot; &nbsp;
+              <strong>Thread :</strong>
+              <a href="{% url 'forum:thread-detail' object.thread.pk %}" class="text-decoration-none" style="color: #fff;">
+                {{ object.thread.title }}
+              </a>
+            {% endif %}
+          </div>
+
+          <div class="reply-content">
+            {{ object.content|linebreaksbr }}
+          </div>
+        </div>
+      </div>
+
+      <p>Êtes-vous sûr(e) de vouloir supprimer cette réponse ?</p>
+
+      <form method="post" id="delete-reply-form">
+        {% csrf_token %}
+        <div class="form-actions">
+          <button type="submit" class="btn btn-danger" id="confirm-delete-btn">Oui, supprimer</button>
+          <a href="{% url 'forum:thread-detail' object.thread.pk %}" class="btn btn-secondary">Annuler</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Empêche double clics / double submissions
+  var form = document.getElementById('delete-reply-form');
+  var btn = document.getElementById('confirm-delete-btn');
+  if (form && btn) {
+    form.addEventListener('submit', function() {
+      btn.disabled = true;
+      btn.innerText = 'Suppression en cours...';
+    });
+  }
+
+  // Initialiser les tooltips si présents
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(function (el) {
+    try { new bootstrap.Tooltip(el); } catch(e) { /* ignore si bootstrap non chargé */ }
+  });
+});
+</script>
+{% endblock %}

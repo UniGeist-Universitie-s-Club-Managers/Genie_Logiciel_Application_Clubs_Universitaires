@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Modifier{% else %}Créer{% endif %} un sondage — MonForum{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="mb-0">{% if object %}Modifier le sondage{% else %}Créer un nouveau sondage{% endif %}</h3>
+  </div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="mb-3">
+        <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+        {{ form.title }}
+        {% if form.title.errors %}
+          <div class="text-danger small mt-1">
+            {{ form.title.errors }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+        {{ form.description }}
+        {% if form.description.errors %}
+          <div class="text-danger small mt-1">
+            {{ form.description.errors }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.forum.id_for_label }}" class="form-label">{{ form.forum.label }}</label>
+        {{ form.forum }}
+        {% if form.forum.errors %}
+          <div class="text-danger small mt-1">
+            {{ form.forum.errors }}
+          </div>
+        {% endif %}
+        <div class="form-text">Optionnel : associer ce sondage à un forum spécifique.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.closes_at.id_for_label }}" class="form-label">{{ form.closes_at.label }}</label>
+        {{ form.closes_at }}
+        {% if form.closes_at.errors %}
+          <div class="text-danger small mt-1">
+            {{ form.closes_at.errors }}
+          </div>
+        {% endif %}
+        <div class="form-text">Optionnel : définir une date de clôture pour le sondage.</div>
+      </div>
+
+      {% if object %}
+        <div class="alert alert-info">
+          <strong>Note :</strong> Pour ajouter ou modifier les options de réponse, utilisez l'interface d'administration Django.
+        </div>
+      {% endif %}
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success">{% if object %}Enregistrer les modifications{% else %}Créer le sondage{% endif %}</button>
+        <a href="{% url 'forum:survey-list' %}" class="btn btn-secondary">Annuler</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if not object %}
+  <div class="alert alert-warning mt-3">
+    <strong>Important :</strong> Après avoir créé le sondage, vous devrez ajouter les options de réponse via l'interface d'administration Django.
+  </div>
+{% endif %}
+{% endblock %}
