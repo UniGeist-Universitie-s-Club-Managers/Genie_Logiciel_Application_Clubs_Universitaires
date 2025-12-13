@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path,include
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import ListeEvenementsView, DetailEvenementView, CreateEvenementView, UpdateEvenementView, DeleteEvenementView, AdminInterfaceView, calendar_view, download_pdf, toggle_featured, promote_event, remove_promotion
 
 urlpatterns = [
@@ -17,3 +19,6 @@ urlpatterns = [
     path('remove_promotion/<int:evenement_id>/', remove_promotion, name='remove_promotion'),
     path('promote/<int:evenement_id>/', promote_event, name='promote'),
 ]
+if settings.DEBUG:                       
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

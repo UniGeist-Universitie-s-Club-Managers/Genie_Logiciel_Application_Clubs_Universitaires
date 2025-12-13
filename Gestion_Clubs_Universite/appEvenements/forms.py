@@ -51,7 +51,7 @@ class PromotionForm(forms.ModelForm):
             'featured': 'Événement à la une',
         }
         help_texts = {
-            'promotion_description': 'Entrez une description attrayante pour la promotion sur Facebook.',
+            'promotion_description': 'Entrez une description attrayante pour la promotion sur le site.',
             'promotion_image': 'Téléchargez une image pour accompagner la promotion.',
             'featured': 'Cochez pour mettre cet événement à la une sur la page d\'accueil.',
         }
