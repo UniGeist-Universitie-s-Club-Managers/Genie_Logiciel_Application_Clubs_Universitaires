@@ -20,6 +20,9 @@ def login_view(request):
         if user:
             login(request, user)
             messages.success(request, "Connexion réussie !")
+            next_url = request.POST.get("next")
+            if next_url:
+                return redirect(next_url)
             return redirect("dashboard")
         else:
             messages.error(request, "Identifiants incorrects.")

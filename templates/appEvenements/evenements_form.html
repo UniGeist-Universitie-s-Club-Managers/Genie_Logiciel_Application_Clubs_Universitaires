@@ -81,6 +81,15 @@
                                 {% endif %}
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label for="{{ form.max_participants.id_for_label }}" class="form-label">Nombre maximum de participants</label>
+                            {{ form.max_participants }}
+                            {% if form.max_participants.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.max_participants.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
                         {% if form.non_field_errors %}
                             <div class="alert alert-danger">
                                 {% for error in form.non_field_errors %}{{ error }}{% endfor %}

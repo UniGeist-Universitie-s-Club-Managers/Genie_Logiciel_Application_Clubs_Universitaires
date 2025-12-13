@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.urls import path,include
-from .views import ListeEvenementsView, DetailEvenementView, CreateEvenementView, UpdateEvenementView, DeleteEvenementView, AdminInterfaceView, calendar_view, download_pdf, toggle_featured, promote_event, remove_promotion
+from .views import ListeEvenementsView, DetailEvenementView, CreateEvenementView, UpdateEvenementView, DeleteEvenementView, AdminInterfaceView, calendar_view, download_pdf, toggle_featured, promote_event, remove_promotion, register_evenement
 
 urlpatterns = [
+    path('',calendar_view, name='home'),
     path('evenements/',ListeEvenementsView.as_view(), name='evenements'),
     path('liste/', ListeEvenementsView.as_view(), name='liste'),
     path('detail/<int:evenement_id>/', DetailEvenementView.as_view(), name='details'),
@@ -16,4 +17,5 @@ urlpatterns = [
     path('post_social/<int:evenement_id>/', promote_event, name='post_social'),
     path('remove_promotion/<int:evenement_id>/', remove_promotion, name='remove_promotion'),
     path('promote/<int:evenement_id>/', promote_event, name='promote'),
+    path('register/<int:evenement_id>/', register_evenement, name='register_evenement'),
 ]

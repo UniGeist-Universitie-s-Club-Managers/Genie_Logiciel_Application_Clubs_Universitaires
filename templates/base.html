@@ -62,6 +62,60 @@
     <!-- Contenu Principal -->
     <main class="container my-5">
         {% block content %}
+        <!-- Hero Section with Featured Events -->
+        <div class="hero-section" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%), url('/static/images/Background.png'); background-size: cover; background-position: center; background-attachment: fixed; color: white; padding: 80px 0; margin-top: -20px; position: relative;">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h1 class="display-4 font-weight-bold mb-4 animate__animated animate__fadeInUp">
+                            <i class="fas fa-university mr-3"></i>Clubs Universitaires
+                        </h1>
+                        <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                            Rejoignez la communauté étudiante, participez aux événements et développez vos passions !
+                        </p>
+                        <div class="animate__animated animate__fadeInUp animate__delay-2s">
+                            <a href="{% url 'liste' %}" class="btn btn-light btn-lg mr-3">
+                                <i class="fas fa-calendar-alt mr-2"></i>Voir tous les événements
+                            </a>
+                            <a href="{% url 'calendar' %}" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-calendar mr-2"></i>Calendrier interactif
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="stats-container animate__animated animate__fadeInRight">
+                            <div class="row text-center">
+                                <div class="col-6 col-md-3 mb-3">
+                                    <div class="stat-card">
+                                        <div class="stat-number">{{ total_events }}</div>
+                                        <div class="stat-label">Événements</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 mb-3">
+                                    <div class="stat-card">
+                                        <div class="stat-number">{{ upcoming_events }}</div>
+                                        <div class="stat-label">À venir</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 mb-3">
+                                    <div class="stat-card">
+                                        <div class="stat-number">{{ active_events }}</div>
+                                        <div class="stat-label">En cours</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 mb-3">
+                                    <div class="stat-card">
+                                        <div class="stat-number">{{ completed_events }}</div>
+                                        <div class="stat-label">Terminés</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Section Utilisateurs -->
         <section id="utilisateurs" class="mb-5">
             <div class="row">

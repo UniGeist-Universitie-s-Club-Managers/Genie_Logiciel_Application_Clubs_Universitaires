@@ -134,3 +134,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
+
+# Email settings
+SITE_NAME = 'University Project'
+DEFAULT_FROM_EMAIL = 'noreply@universityproject.com'

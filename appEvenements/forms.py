@@ -34,6 +34,7 @@ class EvenementForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['visibilite'].initial = 'public'
+        self.fields['statut'].initial = 'planifie'
 
 
 class PromotionForm(forms.ModelForm):

@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, MaxLengthValidator, RegexValidator
+from accounts.models import User
 
 class Evenement(models.Model):
     id=models.AutoField(primary_key=True)
@@ -13,6 +14,7 @@ class Evenement(models.Model):
     lieu = models.CharField(max_length=200, validators=[validators.MinLengthValidator(5), validators.MaxLengthValidator(200), validators.RegexValidator(r'^[a-zA-Z0-9\s.,!?-]+$', message="Le lieu ne peut contenir que des lettres, chiffres, espaces et ponctuation basique.")])
     statut = models.CharField(max_length=50, choices=[('planifie', 'Planifié'), ('en_cours', 'En cours'), ('termine', 'Terminé'), ('annule', 'Annulé')])
     visibilite = models.CharField(max_length=50, choices=[('public', 'Public'), ('prive', 'Privé')])
+    max_participants = models.PositiveIntegerField(default=100, help_text="Nombre maximum de participants")
     featured = models.BooleanField(default=False, help_text="Événement à la une")
     promotion_image = models.FileField(upload_to='promotions/', blank=True, null=True, help_text="Image de promotion")
     promotion_description = models.TextField(blank=True, null=True, help_text="Description de promotion")
@@ -31,13 +33,29 @@ class Evenement(models.Model):
         from django.utils import timezone
         now = timezone.now()
         return self.date_debut <= now <= self.date_fin
+    def clean(self):
+        if self.date_fin <= self.date_debut:
+            raise ValidationError("La date de fin doit être postérieure à la date de début.")
+
     def set_visibilite(self, nouvelle_visibilite):
         self.visibilite = nouvelle_visibilite
         self.save()
-    
+
     def validate_dates(self):
         if self.date_fin <= self.date_debut:
             raise ValueError("La date de fin doit être postérieure à la date de début.")
     def save(self, *args, **kwargs):
         self.validate_dates()
         super().save(*args, **kwargs)
+
+
+class Participation(models.Model):
+    evenement = models.ForeignKey(Evenement, on_delete=models.CASCADE, related_name='participants')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='evenement_participations')
+    registered_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = ('evenement', 'user')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.evenement.titre}"
