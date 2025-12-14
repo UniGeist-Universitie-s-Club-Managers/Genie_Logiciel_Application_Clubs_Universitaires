@@ -9,6 +9,12 @@ def migrate_forum_table_forward(apps, schema_editor):
     
     # SQLite doesn't support ALTER TABLE RENAME COLUMN directly, so we recreate
     with schema_editor.connection.cursor() as cursor:
+        # If the legacy column 'name' doesn't exist, this is a fresh DB and
+        # no migration work is necessary.
+        cursor.execute("PRAGMA table_info('forum_forum')")
+        cols = [row[1] for row in cursor.fetchall()]
+        if 'name' not in cols:
+            return
         # Create temp table with new structure
         cursor.execute("""
             CREATE TABLE temp_forum_forum (
@@ -41,6 +47,18 @@ def migrate_forum_table_forward(apps, schema_editor):
         # Drop old table and rename
         cursor.execute("DROP TABLE forum_forum")
         cursor.execute("ALTER TABLE temp_forum_forum RENAME TO forum_forum")
+    
+        # Conditionally add columns to other tables only if they don't exist
+        with schema_editor.connection.cursor() as cursor:
+            cursor.execute("PRAGMA table_info('forum_survey')")
+            cols = [row[1] for row in cursor.fetchall()]
+            if 'is_closed' not in cols:
+                cursor.execute("ALTER TABLE forum_survey ADD COLUMN is_closed INTEGER NOT NULL DEFAULT 0;")
+
+            cursor.execute("PRAGMA table_info('forum_post')")
+            cols = [row[1] for row in cursor.fetchall()]
+            if 'is_modified' not in cols:
+                cursor.execute("ALTER TABLE forum_post ADD COLUMN is_modified INTEGER NOT NULL DEFAULT 0;")
 
 
 def migrate_forum_table_backward(apps, schema_editor):
@@ -85,15 +103,16 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(migrate_forum_table_forward, migrate_forum_table_backward),
-        migrations.RunSQL(
-            # Add is_closed to forum_survey if it doesn't exist
-            sql="ALTER TABLE forum_survey ADD COLUMN is_closed INTEGER NOT NULL DEFAULT 0;",
-            reverse_sql=[],
-        ),
-        migrations.RunSQL(
-            # Add is_modified to forum_post if it doesn't exist
-            sql="ALTER TABLE forum_post ADD COLUMN is_modified INTEGER NOT NULL DEFAULT 0;",
-            reverse_sql=[],
-        ),
+            # The addition of columns is now handled in the migration function
+            # migrations.RunSQL(
+            #     # Add is_closed to forum_survey if it doesn't exist
+            #     sql="ALTER TABLE forum_survey ADD COLUMN is_closed INTEGER NOT NULL DEFAULT 0;",
+            #     reverse_sql=[],
+            # ),
+            # migrations.RunSQL(
+            #     # Add is_modified to forum_post if it doesn't exist
+            #     sql="ALTER TABLE forum_post ADD COLUMN is_modified INTEGER NOT NULL DEFAULT 0;",
+            #     reverse_sql=[],
+            # ),
     ]
 

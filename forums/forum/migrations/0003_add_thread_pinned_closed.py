@@ -10,16 +10,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
-            # SQLite: Add columns directly
-            sql=[
-                "ALTER TABLE forum_thread ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0;",
-                "ALTER TABLE forum_thread ADD COLUMN is_closed INTEGER NOT NULL DEFAULT 0;",
-            ],
-            reverse_sql=[
-                # Note: SQLite doesn't support DROP COLUMN easily, so we'll leave it
-                # If you need to reverse, you'd need to recreate the table
-            ],
-        ),
+        # Migration retained for history but operations are no-ops because
+        # the initial migration already creates these fields.
     ]
 

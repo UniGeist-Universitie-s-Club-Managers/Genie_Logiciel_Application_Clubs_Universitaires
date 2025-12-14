@@ -36,12 +36,18 @@ class PostAdmin(admin.ModelAdmin):
         return obj.content[:50] + '...' if len(obj.content) > 50 else obj.content
     truncated_content.short_description = 'Content'
 
+class SurveyOptionInline(admin.TabularInline):
+    model = SurveyOption
+    extra = 1
+
+
 @admin.register(Survey)
 class SurveyAdmin(admin.ModelAdmin):
     list_display = ('title', 'forum', 'author', 'created_at', 'is_closed')
     list_filter = ('is_closed', 'forum', 'created_at')
     search_fields = ('title', 'description')
     list_select_related = ('forum', 'author')
+    inlines = [SurveyOptionInline]
 
 @admin.register(SurveyOption)
 class SurveyOptionAdmin(admin.ModelAdmin):

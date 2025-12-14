@@ -183,20 +183,16 @@ class Thread(models.Model):
         return self.forum.can_read(user)
         
     def can_edit(self, user):
-        """Autorise l'auteur ou tout utilisateur ayant le droit d'écrire."""
-        if not user or not user.is_authenticated:
+        """Vérifie si l'utilisateur peut modifier le thread."""
+        if not user.is_authenticated:
             return False
-        if user == self.author:
-            return True
-        return self.forum.can_write(user)
+        return user == self.author or user.is_staff or user.is_superuser
         
     def can_delete(self, user):
-        """Autorise suppression si auteur ou permission d'écriture."""
-        if not user or not user.is_authenticated:
+        """Vérifie si l'utilisateur peut supprimer le thread."""
+        if not user.is_authenticated:
             return False
-        if user == self.author:
-            return True
-        return self.forum.can_write(user)
+        return user == self.author or user.is_staff or user.is_superuser
 
     def __str__(self):
         return self.title
@@ -322,16 +318,19 @@ class Survey(models.Model):
         if self.forum.is_private() and not self.forum.can_write(user):
             return False
                 
-        # Vérifier si l'utilisateur a déjà voté
-        return not self.votes.filter(user=user).exists()
+        # Autorise le vote (nouveau ou modification) si toutes les conditions sont réunies
+        return True
         
     def can_manage(self, user):
         """Vérifie si un utilisateur peut gérer ce sondage"""
-        if not user or not user.is_authenticated:
-            return False
-        if user == self.author:
+        if not user.is_authenticated:
+         return False
+        # L'auteur, le staff, ou le responsable du club (pour les forums privés) peuvent gérer
+        if user == self.author or user.is_staff:
             return True
-        return self.forum.can_write(user)
+        if self.forum.is_private() and self.forum.club and user == self.forum.club.responsible:
+            return True
+        return False
 
     def __str__(self):
         return self.title
@@ -343,6 +342,7 @@ class Survey(models.Model):
         ordering = ['-created_at']
         verbose_name = "Sondage"
         verbose_name_plural = "Sondages"
+
 
 
 class SurveyOption(models.Model):
@@ -360,17 +360,38 @@ class SurveyOption(models.Model):
 
 
 class SurveyVote(models.Model):
-    """Vote d'un utilisateur sur un sondage"""
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name='votes')
     option = models.ForeignKey(SurveyOption, on_delete=models.CASCADE, related_name='votes')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='survey_votes')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.user.username} a voté pour {self.option.text}"
+    class Meta:
+        unique_together = ('survey', 'user')  # Un vote par utilisateur par sondage
+
+
+class Notification(models.Model):
+    """Notification envoyée à un utilisateur quand un événement a lieu."""
+    NOTIF_TYPES = [
+        ('reply', 'Reply'),
+        ('vote', 'Vote'),
+    ]
+
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='actions')
+    notif_type = models.CharField(max_length=20, choices=NOTIF_TYPES)
+    message = models.CharField(max_length=255)
+    thread = models.ForeignKey(Thread, on_delete=models.CASCADE, null=True, blank=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, null=True, blank=True)
+    option = models.ForeignKey(SurveyOption, on_delete=models.CASCADE, null=True, blank=True)
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('survey', 'user')  # Un utilisateur ne peut voter qu'une fois par sondage
-        verbose_name = "Vote"
-        verbose_name_plural = "Votes"
+        ordering = ['-created_at']
 
+    def __str__(self):
+        return f"Notification to {self.recipient} - {self.message}"
+
+
+        

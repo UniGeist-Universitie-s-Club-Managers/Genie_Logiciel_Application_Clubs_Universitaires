@@ -1,6 +1,6 @@
 from django.core.exceptions import PermissionDenied
 
-from .utils import get_forum_or_403
+from .utils import get_forum_or_404
 
 
 class ForumPermissionMixin:

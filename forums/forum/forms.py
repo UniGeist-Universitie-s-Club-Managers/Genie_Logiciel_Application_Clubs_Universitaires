@@ -157,26 +157,40 @@ class ThreadForm(forms.ModelForm):
             thread.save()
         return thread
 
-
 class PostForm(forms.ModelForm):
     """Formulaire pour créer/modifier une réponse."""
 
     def __init__(self, *args, **kwargs):
+        # récupère thread/user passés via kwargs (ou None)
         self.thread = kwargs.pop('thread', None)
         self.user = kwargs.pop('user', None)
 
-        # Remove 'thread' from POST data if present (defensive)
-        if args and hasattr(args[0], 'copy'):
+        # Si les données ont été passées en positionnel (ex: PostForm(request.POST, ...))
+        if args:
             data = args[0]
-            mutable = data.copy()
-            if 'thread' in mutable:
-                mutable.pop('thread')
-            args = (mutable,) + args[1:]
+            # QueryDict (request.POST) a la méthode copy()
+            if hasattr(data, 'copy'):
+                data = data.copy()
+                # retirer le champ 'thread' s'il est présent dans le POST
+                if 'thread' in data:
+                    data.pop('thread')
+                # recréer args en injectant la version modifiée de data
+                args = (data,) + args[1:]
+
+        # Si les données ont été passées via kwargs (ex: data=...)
+        if 'data' in kwargs and kwargs['data']:
+            d = kwargs['data']
+            if hasattr(d, 'copy'):
+                d = d.copy()
+                if 'thread' in d:
+                    d.pop('thread')
+                kwargs['data'] = d
+
         super().__init__(*args, **kwargs)
 
     class Meta:
         model = Post
-        fields = ['content']
+        fields = ['content']  # on n'expose pas 'thread'
         widgets = {
             'content': forms.Textarea(attrs={
                 'class': 'form-control',
@@ -197,6 +211,18 @@ class PostForm(forms.ModelForm):
         if self.user and not self.thread.forum.can_write(self.user):
             raise ValidationError("Vous n'avez pas la permission de répondre dans ce sujet.")
 
+        # Ensure the model instance has the thread and author set before model validation
+        if self.thread:
+            try:
+                self.instance.thread = self.thread
+            except Exception:
+                pass
+        if self.user:
+            try:
+                self.instance.author = self.user
+            except Exception:
+                pass
+
         return cleaned_data
 
     def save(self, commit=True):
@@ -207,6 +233,7 @@ class PostForm(forms.ModelForm):
         if commit:
             post.save()
         return post
+
 
 class SurveyForm(forms.ModelForm):
     """Formulaire pour créer un sondage (US 10.2)"""
@@ -299,7 +326,6 @@ class SurveyOptionForm(forms.ModelForm):
                 )
 
         return text
-
     def save(self, commit=True):
         option = super().save(commit=False)
         if self.survey:

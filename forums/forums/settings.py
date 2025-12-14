@@ -63,6 +63,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+                'forum.context_processors.unread_notifications',
                 'django.contrib.messages.context_processors.messages',
             ],
         },

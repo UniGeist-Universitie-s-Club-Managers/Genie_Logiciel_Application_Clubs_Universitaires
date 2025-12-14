@@ -60,6 +60,16 @@
               <a class="nav-link" href="/admin/"><i class="fas fa-tools me-1"></i> Admin</a>
             </li>
             {% endif %}
+
+            <li class="nav-item dropdown">
+              <a class="nav-link position-relative" href="{% url 'forum:notifications' %}" id="notifDropdown">
+                <i class="fas fa-bell me-1"></i>
+                {% if unread_notifications_count and unread_notifications_count > 0 %}
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ unread_notifications_count }}</span>
+                {% endif %}
+              </a>
+            </li>
+
             <li class="nav-item dropdown minimalist-dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-user-circle me-1"></i> {{ user.username }}
