@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Accueil - Gestion des Clubs Universitaires{% endblock %}
+
+{% block hero_title %}Bienvenue sur la Plateforme des Clubs Universitaires{% endblock %}
+{% block hero_subtitle %}Découvrez les événements à venir et participez à la vie étudiante{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Featured Events -->
+<div class="hero-section" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%), url('/static/images/Background.png'); background-size: cover; background-position: center; background-attachment: fixed; color: white; padding: 80px 0; margin-top: -20px; position: relative;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 font-weight-bold mb-4 animate__animated animate__fadeInUp">
+                    <i class="fas fa-university mr-3"></i>Clubs Universitaires
+                </h1>
+                <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                    Rejoignez la communauté étudiante, participez aux événements et développez vos passions !
+                </p>
+                <div class="animate__animated animate__fadeInUp animate__delay-2s">
+                    <a href="{% url 'liste' %}" class="btn btn-light btn-lg mr-3">
+                        <i class="fas fa-calendar-alt mr-2"></i>Voir tous les événements
+                    </a>
+                    <a href="{% url 'calendar' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-calendar mr-2"></i>Calendrier interactif
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="stats-container animate__animated animate__fadeInRight">
+                    <div class="row text-center">
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ total_events }}</div>
+                                <div class="stat-label">Événements</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ upcoming_events }}</div>
+                                <div class="stat-label">À venir</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ active_events }}</div>
+                                <div class="stat-label">En cours</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ completed_events }}</div>
+                                <div class="stat-label">Terminés</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Events Section -->
+<section class="featured-events py-5" style="background: #f8f9fa;">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-5 font-weight-bold mb-3" style="color: #333;">
+                    <i class="fas fa-star text-warning mr-3"></i>Événements à la Une
+                </h2>
+                <p class="lead text-muted">Découvrez les événements les plus attendus de nos clubs universitaires</p>
+            </div>
+        </div>
+
+        {% if featured_events %}
+        <div class="row">
+            {% for event in featured_events %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="event-card card h-100 border-0 shadow-sm animate__animated animate__fadeInUp" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    {% if event.promotion_image and event.promotion_image.url %}
+                    <div class="card-img-top position-relative" style="border-radius: 15px 15px 0 0; overflow: hidden;">
+                        <img src="{{ event.promotion_image.url }}" alt="{{ event.titre }}" class="w-100" style="height: 250px; object-fit: cover;">
+                        <div class="image-overlay position-absolute bottom-0 start-0 end-0 bg-gradient-dark p-3" style="border-radius: 0 0 15px 15px;">
+                            <h5 class="card-title text-white mb-2">{{ event.titre }}</h5>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="card-img-top position-relative" style="border-radius: 15px 15px 0 0; overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 250px; display: flex; align-items: center; justify-content: center;">
+                        <div class="text-center" style="color: white;">
+                            <i class="fas fa-calendar-alt fa-5x mb-3"></i>
+                            <p class="mb-0">{{ event.titre }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="card-body" style="min-height: 120px;">
+                        <h6 class="card-title text-center mb-3">{{ event.titre }}</h6>
+                        {% if event.promotion_description %}
+                            <p class="card-text">{{ event.promotion_description|truncatechars:150 }}</p>
+                        {% else %}
+                            <p class="card-text text-muted">{{ event.description|truncatechars:150 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <a href="{% url 'liste' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-list mr-2"></i>Voir tous les événements
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-alt fa-5x text-muted mb-4"></i>
+                        <h3 class="text-muted mb-3">Aucun événement à venir</h3>
+                        <p class="text-muted mb-4">Les événements à la une apparaîtront ici dès qu'ils seront programmés.</p>
+                        <a href="{% url 'liste' %}" class="btn btn-primary">
+                            <i class="fas fa-calendar-plus mr-2"></i>Consulter tous les événements
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Quick Actions Section -->
+<section class="quick-actions py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-5 font-weight-bold mb-3" style="color: #333;">
+                    <i class="fas fa-bolt text-warning mr-3"></i>Actions Rapides
+                </h2>
+                <p class="lead text-muted">Accédez rapidement aux fonctionnalités principales</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="action-card card h-100 border-0 shadow-sm text-center animate__animated animate__fadeInLeft" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="action-icon mb-3">
+                            <i class="fas fa-plus-circle fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Créer un Événement</h5>
+                        <p class="card-text text-muted">Organisez un nouvel événement pour votre club</p>
+                        <a href="{% url 'ajouter' %}" class="btn btn-primary">
+                            <i class="fas fa-plus mr-2"></i>Créer
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="action-card card h-100 border-0 shadow-sm text-center animate__animated animate__fadeInUp" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="action-icon mb-3">
+                            <i class="fas fa-calendar-alt fa-4x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Calendrier Interactif</h5>
+                        <p class="card-text text-muted">Visualisez tous les événements dans un calendrier</p>
+                        <a href="{% url 'calendar' %}" class="btn btn-success">
+                            <i class="fas fa-calendar mr-2"></i>Voir le calendrier
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="action-card card h-100 border-0 shadow-sm text-center animate__animated animate__fadeInRight" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="action-icon mb-3">
+                            <i class="fas fa-cogs fa-4x text-info"></i>
+                        </div>
+                        <h5 class="card-title">Administration</h5>
+                        <p class="card-text text-muted">Gérez les événements et les utilisateurs</p>
+                        <a href="{% url 'admin_interface' %}" class="btn btn-info">
+                            <i class="fas fa-cogs mr-2"></i>Administrer
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="display-5 font-weight-bold mb-4">
+                    <i class="fas fa-users mr-3"></i>Rejoignez la Communauté
+                </h2>
+                <p class="lead mb-4">
+                    Participez à la vie étudiante, créez des souvenirs inoubliables et développez vos compétences !
+                </p>
+                <div>
+                    <a href="{% url 'liste' %}" class="btn btn-light btn-lg mr-3">
+                        <i class="fas fa-search mr-2"></i>Explorer les événements
+                    </a>
+                    <a href="{% url 'ajouter' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-plus mr-2"></i>Organiser un événement
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+    animation: float 20s infinite linear;
+}
+
+@keyframes float {
+    0% { transform: translateX(-50%) translateY(-50%) rotate(0deg); }
+    100% { transform: translateX(-50%) translateY(-50%) rotate(360deg); }
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.detail-item {
+    padding: 15px;
+    border-radius: 10px;
+    background: #f8f9fa;
+    margin-bottom: 10px;
+}
+
+.empty-state {
+    padding: 50px 0;
+}
+
+.animate__delay-1s {
+    animation-delay: 0.5s;
+}
+
+.animate__delay-2s {
+    animation-delay: 1s;
+}
+</style>
+
+<!-- Animate.css for animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+{% endblock %}

@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Accueil - Ressources et Aides{% endblock %}
+
+{% block hero_title %}Bienvenue sur la Plateforme de Ressources et Aides{% endblock %}
+{% block hero_subtitle %}Accédez à des documents, guides et outils pour vos clubs et projets universitaires{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%), url('/static/images/Background.png'); background-size: cover; background-position: center; background-attachment: fixed; color: white; padding: 80px 0; margin-top: -20px; position: relative;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 font-weight-bold mb-4 animate__animated animate__fadeInUp">
+                    <i class="fas fa-book mr-3"></i>Ressources Universitaires
+                </h1>
+                <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                    Tous les documents et outils nécessaires pour vos projets et clubs !
+                </p>
+                <div class="animate__animated animate__fadeInUp animate__delay-2s">
+                    <a href="{% url 'resources:resource_list' %}" class="btn btn-light btn-lg mr-3">
+                        <i class="fas fa-book mr-2"></i>Voir les ressources
+                    </a>
+                    <a href="{% url 'resources:aid_list' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-question-circle mr-2"></i>Consulter les aides
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="stats-container animate__animated animate__fadeInRight">
+                    <div class="row text-center">
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ total_resources|default:0 }}</div>
+                                <div class="stat-label">Ressources</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ total_aids|default:0 }}</div>
+                                <div class="stat-label">Aides</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">5</div>
+                                <div class="stat-label">Catégories</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">10</div>
+                                <div class="stat-label">Clubs</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Resources Section -->
+<section class="featured-resources py-5" style="background: #f8f9fa;">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-5 font-weight-bold mb-3" style="color: #333;">
+                    <i class="fas fa-star text-warning mr-3"></i>Ressources Récentes
+                </h2>
+                <p class="lead text-muted">Découvrez les dernières ressources ajoutées par la communauté</p>
+            </div>
+        </div>
+
+        {% if recent_resources %}
+        <div class="row">
+            {% for resource in recent_resources %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="resource-card card h-100 border-0 shadow-sm animate__animated animate__fadeInUp" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 20px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title mb-1">{{ resource.title }}</h5>
+                                <small><i class="fas fa-tag mr-1"></i>{{ resource.category }}</small>
+                            </div>
+                            <span class="badge badge-light">
+                                {% if resource.status == 'validated' %}
+                                    <i class="fas fa-check-circle mr-1"></i>Validé
+                                {% else %}
+                                    <i class="fas fa-clock mr-1"></i>En attente
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text text-muted">{{ resource.description|truncatechars:120 }}</p>
+                        <div class="resource-meta mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-user mr-1"></i>{{ resource.submitted_by.username }}
+                                {% if resource.club %}
+                                    <br><i class="fas fa-users-cog mr-1"></i>{{ resource.club.name }}
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar mr-1"></i>{{ resource.submitted_at|date:"d/m/Y" }}
+                            </small>
+                            <a href="{% url 'resources:resource_detail' resource.id %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye mr-1"></i>Voir
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <a href="{% url 'resources:resource_list' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-list mr-2"></i>Voir toutes les ressources
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-book fa-5x text-muted mb-4"></i>
+                        <h3 class="text-muted mb-3">Aucune ressource disponible</h3>
+                        <p class="text-muted mb-4">Les ressources apparaîtront ici dès qu'elles seront ajoutées.</p>
+                        <a href="{% url 'resources:resource_propose' %}" class="btn btn-primary">
+                            <i class="fas fa-plus mr-2"></i>Proposer une ressource
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Quick Actions Section -->
+<section class="quick-actions py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-5 font-weight-bold mb-3" style="color: #333;">
+                    <i class="fas fa-bolt text-warning mr-3"></i>Actions Rapides
+                </h2>
+                <p class="lead text-muted">Accédez rapidement aux fonctionnalités principales</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="action-card card h-100 border-0 shadow-sm text-center animate__animated animate__fadeInLeft" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="action-icon mb-3">
+                            <i class="fas fa-upload fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Proposer une Ressource</h5>
+                        <p class="card-text text-muted">Partagez vos documents et templates avec la communauté</p>
+                        <a href="{% url 'resources:resource_propose' %}" class="btn btn-primary">
+                            <i class="fas fa-upload mr-2"></i>Proposer
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="action-card card h-100 border-0 shadow-sm text-center animate__animated animate__fadeInUp" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="action-icon mb-3">
+                            <i class="fas fa-question-circle fa-4x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Demander de l'Aide</h5>
+                        <p class="card-text text-muted">Posez vos questions et obtenez des réponses</p>
+                        <a href="{% url 'resources:aid_request' %}" class="btn btn-success">
+                            <i class="fas fa-question mr-2"></i>Demander
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="action-card card h-100 border-0 shadow-sm text-center animate__animated animate__fadeInRight" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="action-icon mb-3">
+                            <i class="fas fa-heart fa-4x text-danger"></i>
+                        </div>
+                        <h5 class="card-title">Mes Favoris</h5>
+                        <p class="card-text text-muted">Accédez à vos ressources sauvegardées</p>
+                        <a href="{% url 'resources:favorites_list' %}" class="btn btn-danger">
+                            <i class="fas fa-heart mr-2"></i>Voir les favoris
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="display-5 font-weight-bold mb-4">
+                    <i class="fas fa-share-alt mr-3"></i>Contribuez à la Communauté
+                </h2>
+                <p class="lead mb-4">
+                    Partagez vos connaissances et aidez les autres étudiants à réussir !
+                </p>
+                <div>
+                    <a href="{% url 'resources:resource_propose' %}" class="btn btn-light btn-lg mr-3">
+                        <i class="fas fa-upload mr-2"></i>Partager une ressource
+                    </a>
+                    <a href="{% url 'resources:aid_propose' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-hands-helping mr-2"></i>Proposer une aide
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+    animation: float 20s infinite linear;
+}
+
+@keyframes float {
+    0% { transform: translateX(-50%) translateY(-50%) rotate(0deg); }
+    100% { transform: translateX(-50%) translateY(-50%) rotate(360deg); }
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.resource-card:hover, .action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.empty-state {
+    padding: 50px 0;
+}
+
+.animate__delay-1s {
+    animation-delay: 0.5s;
+}
+
+.animate__delay-2s {
+    animation-delay: 1s;
+}
+</style>
+
+<!-- Animate.css for animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+{% endblock %}

@@ -1,15 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_str
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
 from .models import User, Membership, Contribution, EventParticipation, UserBadge
 from .forms import RegisterForm
-from .utils import send_verification_email
+from appEvenements.models import Evenement
+from resources.models import Resource, Aid, FAQ
 
 # -------------------- LOGIN --------------------
 def login_view(request):
@@ -44,14 +41,13 @@ def register_view(request):
                 username=form.cleaned_data["username"],
                 email=form.cleaned_data["email"],
                 password=form.cleaned_data["password"],
-                is_active=False
+                is_active=True
             )
             # Champs optionnels
             user.phone = form.cleaned_data.get("phone")
             user.address = form.cleaned_data.get("address")
             user.save()
-            send_verification_email(request, user)
-            messages.success(request, "Compte créé. Un email de vérification a été envoyé.")
+            messages.success(request, "Compte créé avec succès !")
             return redirect("login")
     else:
         form = RegisterForm()
@@ -187,3 +183,64 @@ def send_test_email(request):
 
 def fake_verify_success(request):
     return render(request, "accounts/verify_success.html")
+
+# -------------------- HOME PAGES --------------------
+def clubs_home_view(request):
+    return render(request, 'clubs_home.html')
+
+def events_home_view(request):
+    events = Evenement.objects.filter(statut__in=['planifie', 'en_cours']).order_by('date_debut')[:6]
+    total_events = Evenement.objects.count()
+    upcoming_events = Evenement.objects.filter(statut='planifie').count()
+    active_events = Evenement.objects.filter(statut='en_cours').count()
+    completed_events = Evenement.objects.filter(statut='termine').count()
+    context = {
+        'events': events,
+        'total_events': total_events,
+        'upcoming_events': upcoming_events,
+        'active_events': active_events,
+        'completed_events': completed_events,
+    }
+    return render(request, 'events_home.html', context)
+
+def forums_home_view(request):
+    from appEvenements.models import Evenement
+    events = Evenement.objects.filter(statut__in=['planifie', 'en_cours']).order_by('date_debut')[:6]
+    featured_events = Evenement.objects.filter(visibilite='public').order_by('-date_creation')[:3]
+    total_events = Evenement.objects.count()
+    upcoming_events = Evenement.objects.filter(statut='planifie').count()
+    active_events = Evenement.objects.filter(statut='en_cours').count()
+    completed_events = Evenement.objects.filter(statut='termine').count()
+    context = {
+        'events': events,
+        'featured_events': featured_events,
+        'total_events': total_events,
+        'upcoming_events': upcoming_events,
+        'active_events': active_events,
+        'completed_events': completed_events,
+    }
+    return render(request, 'forums_home.html', context)
+
+def resources_home_view(request):
+    recent_resources = Resource.objects.filter(is_validated=True).order_by('-date_submitted')[:6]
+    total_resources = Resource.objects.filter(is_validated=True).count()
+    total_aids = Aid.objects.filter(is_validated=True).count()
+    context = {
+        'recent_resources': recent_resources,
+        'total_resources': total_resources,
+        'total_aids': total_aids,
+    }
+    return render(request, 'resources_home.html', context)
+
+def help_home_view(request):
+    faqs = FAQ.objects.all()[:6]
+    total_faqs = FAQ.objects.count()
+    total_guides = 6  # Placeholder
+    total_aids = Aid.objects.count()
+    context = {
+        'faqs': faqs,
+        'total_faqs': total_faqs,
+        'total_guides': total_guides,
+        'total_aids': total_aids,
+    }
+    return render(request, 'help_home.html', context)

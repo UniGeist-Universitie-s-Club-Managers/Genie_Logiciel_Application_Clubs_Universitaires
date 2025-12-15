@@ -11,8 +11,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register_view, name='register'),
 
-    # Vérification email
-    path('verify/<uidb64>/<token>/', views.verify_email, name='verify_email'),
+
 
     # Profil utilisateur
     path('profile/', views.profile_view, name='profile'),
@@ -23,6 +22,12 @@ urlpatterns = [
 
     # Chatbot
     path('chatbot/', views.chatbot_view, name='chatbot'),
-    path('verify/success/', views.fake_verify_success, name='fake_verify_success'),
+
+    # Home pages
+    path('clubs-home/', views.clubs_home_view, name='clubs_home'),
+    path('events-home/', views.events_home_view, name='events_home'),
+    path('forums-home/', views.forums_home_view, name='forums_home'),
+    path('resources-home/', views.resources_home_view, name='resources_home'),
+    path('help-home/', views.help_home_view, name='help_home'),
 
 ]

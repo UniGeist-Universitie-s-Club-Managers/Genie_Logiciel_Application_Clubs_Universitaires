@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Accueil - Aides et Support{% endblock %}
+
+{% block hero_title %}Bienvenue sur le Centre d'Aide{% endblock %}
+{% block hero_subtitle %}Trouvez des réponses à vos questions et des guides pour utiliser la plateforme{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%), url('/static/images/Background.png'); background-size: cover; background-position: center; background-attachment: fixed; color: white; padding: 80px 0; margin-top: -20px; position: relative;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 font-weight-bold mb-4 animate__animated animate__fadeInUp">
+                    <i class="fas fa-question-circle mr-3"></i>Centre d'Aide
+                </h1>
+                <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                    Toutes les réponses à vos questions sur la plateforme universitaire !
+                </p>
+                <div class="animate__animated animate__fadeInUp animate__delay-2s">
+                    <a href="#faq" class="btn btn-light btn-lg mr-3">
+                        <i class="fas fa-question mr-2"></i>FAQ
+                    </a>
+                    <a href="#guides" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-book mr-2"></i>Guides
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="stats-container animate__animated animate__fadeInRight">
+                    <div class="row text-center">
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ total_faqs|default:0 }}</div>
+                                <div class="stat-label">Questions</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ total_guides|default:0 }}</div>
+                                <div class="stat-label">Guides</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ total_aids|default:0 }}</div>
+                                <div class="stat-label">Aides</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">24/7</div>
+                                <div class="stat-label">Support</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Section -->
+<section id="faq" class="faq-section py-5" style="background: #f8f9fa;">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-5 font-weight-bold mb-3" style="color: #333;">
+                    <i class="fas fa-question-circle text-primary mr-3"></i>Questions Fréquemment Posées
+                </h2>
+                <p class="lead text-muted">Trouvez rapidement des réponses à vos questions</p>
+            </div>
+        </div>
+
+        {% if faqs %}
+        <div class="row">
+            {% for faq in faqs %}
+            <div class="col-lg-6 mb-4">
+                <div class="faq-card card h-100 border-0 shadow-sm animate__animated animate__fadeInUp" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 20px;">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-question mr-2"></i>{{ faq.question }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ faq.answer }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-question-circle fa-5x text-muted mb-4"></i>
+                        <h3 class="text-muted mb-3">Aucune FAQ disponible</h3>
+                        <p class="text-muted mb-4">Les questions fréquemment posées apparaîtront ici.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Guides Section -->
+<section id="guides" class="guides-section py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-5 font-weight-bold mb-3" style="color: #333;">
+                    <i class="fas fa-book text-success mr-3"></i>Guides Utiles
+                </h2>
+                <p class="lead text-muted">Apprenez à utiliser toutes les fonctionnalités de la plateforme</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="guide-card card h-100 border-0 shadow-sm text-center animate__animated animate__fadeInLeft" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="guide-icon mb-3">
+                            <i class="fas fa-users fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Gestion des Utilisateurs</h5>
+                        <p class="card-text text-muted">Comment créer un compte, se connecter et gérer son profil</p>
+                        <a href="#" class="btn btn-primary">
+                            <i class="fas fa-eye mr-2"></i>Lire le guide
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="guide-card card h-100 border-0 shadow-sm text-center animate__animated animate__fadeInUp" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="guide-icon mb-3">
+                            <i class="fas fa-users-cog fa-4x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Gestion des Clubs</h5>
+                        <p class="card-text text-muted">Créer, rejoindre et administrer des clubs universitaires</p>
+                        <a href="#" class="btn btn-success">
+                            <i class="fas fa-eye mr-2"></i>Lire le guide
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="guide-card card h-100 border-0 shadow-sm text-center animate__animated animate__fadeInRight" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="guide-icon mb-3">
+                            <i class="fas fa-calendar-alt fa-4x text-info"></i>
+                        </div>
+                        <h5 class="card-title">Organisation d'Événements</h5>
+                        <p class="card-text text-muted">Planifier et gérer des événements pour votre club</p>
+                        <a href="#" class="btn btn-info">
+                            <i class="fas fa-eye mr-2"></i>Lire le guide
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="guide-card card h-100 border-0 shadow-sm text-center animate__animated animate__fadeInLeft" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="guide-icon mb-3">
+                            <i class="fas fa-comments fa-4x text-warning"></i>
+                        </div>
+                        <h5 class="card-title">Utilisation du Forum</h5>
+                        <p class="card-text text-muted">Communiquer et échanger sur le forum universitaire</p>
+                        <a href="#" class="btn btn-warning">
+                            <i class="fas fa-eye mr-2"></i>Lire le guide
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="guide-card card h-100 border-0 shadow-sm text-center animate__animated animate__fadeInUp" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="guide-icon mb-3">
+                            <i class="fas fa-book fa-4x text-danger"></i>
+                        </div>
+                        <h5 class="card-title">Ressources et Aides</h5>
+                        <p class="card-text text-muted">Accéder et partager des ressources pédagogiques</p>
+                        <a href="#" class="btn btn-danger">
+                            <i class="fas fa-eye mr-2"></i>Lire le guide
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="guide-card card h-100 border-0 shadow-sm text-center animate__animated animate__fadeInRight" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="guide-icon mb-3">
+                            <i class="fas fa-shield-alt fa-4x text-secondary"></i>
+                        </div>
+                        <h5 class="card-title">Sécurité et Confidentialité</h5>
+                        <p class="card-text text-muted">Protéger vos données et utiliser la plateforme en sécurité</p>
+                        <a href="#" class="btn btn-secondary">
+                            <i class="fas fa-eye mr-2"></i>Lire le guide
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Support Section -->
+<section class="contact-section py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="display-5 font-weight-bold mb-4">
+                    <i class="fas fa-headset mr-3"></i>Besoin d'Aide Supplémentaire ?
+                </h2>
+                <p class="lead mb-4">
+                    Notre équipe de support est là pour vous aider !
+                </p>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="contact-card">
+                            <i class="fas fa-envelope fa-3x mb-3"></i>
+                            <h5>Email</h5>
+                            <p>support@unigeist.com</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="contact-card">
+                            <i class="fas fa-phone fa-3x mb-3"></i>
+                            <h5>Téléphone</h5>
+                            <p>+33 1 23 45 67 89</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="contact-card">
+                            <i class="fas fa-clock fa-3x mb-3"></i>
+                            <h5>Horaires</h5>
+                            <p>Lun-Ven: 9h-18h</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+    animation: float 20s infinite linear;
+}
+
+@keyframes float {
+    0% { transform: translateX(-50%) translateY(-50%) rotate(0deg); }
+    100% { transform: translateX(-50%) translateY(-50%) rotate(360deg); }
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.faq-card:hover, .guide-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.empty-state {
+    padding: 50px 0;
+}
+
+.contact-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 30px;
+    margin: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.animate__delay-1s {
+    animation-delay: 0.5s;
+}
+
+.animate__delay-2s {
+    animation-delay: 1s;
+}
+</style>
+
+<!-- Animate.css for animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+{% endblock %}

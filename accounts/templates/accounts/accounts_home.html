@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Accounts Home{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Welcome to the University Platform</h1>
+    <p class="text-center mb-5">Access different sections of the platform:</p>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Events</h5>
+                    <p class="card-text">View and manage university events.</p>
+                    <a href="{% url 'appEvenements:evenements' %}" class="btn btn-primary">Go to Events</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Resources</h5>
+                    <p class="card-text">Access shared resources and materials.</p>
+                    <a href="{% url 'resources:resource_list' %}" class="btn btn-primary">Go to Resources</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Forum</h5>
+                    <p class="card-text">Participate in discussions and forums.</p>
+                    <a href="{% url 'forum:thread-list' %}" class="btn btn-primary">Go to Forum</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Clubs</h5>
+                    <p class="card-text">Explore and join university clubs.</p>
+                    <a href="{% url 'clubApp:club_list' %}" class="btn btn-primary">Go to Clubs</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Dashboard</h5>
+                    <p class="card-text">View your personal dashboard.</p>
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Admin</h5>
+                    <p class="card-text">Access admin panel (if authorized).</p>
+                    <a href="/admin/" class="btn btn-primary">Go to Admin</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

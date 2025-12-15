@@ -19,10 +19,9 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
-from appEvenements.views import calendar_view
 
 urlpatterns = [
-    path('', calendar_view, name='home'),
+    path('', RedirectView.as_view(url='/accounts/clubs-home/', permanent=False), name='home'),
     path('admin/', admin.site.urls),
     path('club/', include('clubApp.urls')),
     path('evenements/', include('appEvenements.urls')),

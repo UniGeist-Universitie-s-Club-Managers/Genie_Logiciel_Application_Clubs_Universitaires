@@ -157,6 +157,7 @@ body {
             <p><strong>Email:</strong> {{ user.email }}</p>
             <p><strong>Phone:</strong> {{ user.phone }}</p>
             <p><strong>Adresse:</strong> {{ user.address }}</p>
+            <a href="{% url 'logout' %}" class="btn btn-warning">Se déconnecter</a>
             <a href="{% url 'delete_account' %}" class="btn btn-danger">Supprimer mon compte</a>
         </div>
     </div>
