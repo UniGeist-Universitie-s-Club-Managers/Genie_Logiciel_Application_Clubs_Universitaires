@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/admin_panel.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-panel">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 text-center mb-5">
+                <h1 class="display-4">{{ title }}</h1>
+                <p class="lead text-muted">Interface d'administration pour gérer toutes les entités de l'application</p>
+            </div>
+        </div>
+
+        <div class="row">
+            {% for entity in entities %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ entity.name }}</h5>
+                        <p class="card-text flex-grow-1">{{ entity.description }}</p>
+                        <a href="{% url entity.url %}" class="btn btn-primary mt-auto">Gérer</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="alert alert-info" role="alert">
+                    <h5 class="alert-heading">Informations importantes</h5>
+                    <p>Cette interface est réservée aux administrateurs. Vous pouvez gérer :</p>
+                    <ul class="mb-0">
+                        <li>Les comptes utilisateurs et leurs permissions</li>
+                        <li>Les événements et leurs participations</li>
+                        <li>Les forums, sujets et sondages</li>
+                        <li>Les ressources éducatives</li>
+                        <li>Les demandes d'aide</li>
+                        <li>Les clubs et leurs membres</li>
+                    </ul>
+                    <hr>
+                    <p class="mb-0">Pour accéder à l'interface Django admin originale, allez à <a href="/django-admin/" target="_blank">/django-admin/</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
