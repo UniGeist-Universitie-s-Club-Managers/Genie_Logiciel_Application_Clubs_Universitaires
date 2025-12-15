@@ -5,7 +5,7 @@
 {% block content %}
 <style>
 body {
-    background: #f0f2f5;
+    background: #000000;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
@@ -141,11 +141,11 @@ body {
         <h3>Navigation</h3>
         <a href="{% url 'profile' %}" class="active">Profil</a>
         <a href="{% url 'user_history' %}">Historique</a>
-        <a href="{% url 'dashboard' %}">Mes Clubs</a>
-        <a href="{% url 'dashboard' %}">Évènements</a>
+        <a href="{% url 'club_list_view' %}">Mes Clubs</a>
+        <a href="{% url 'home' %}">Évènements</a>
         <a href="{% url 'dashboard' %}">Forums</a>
-        <a href="{% url 'dashboard' %}">Aides</a>
-        <a href="{% url 'dashboard' %}">Ressources</a>
+        <a href="{% url 'aid_list' %}">Aides</a>
+        <a href="{% url 'resource_list' %}">Ressources</a>
         <a href="{% url 'chatbot' %}">Chatbot</a>
     </div>
 
