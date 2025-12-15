@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Supprimer le forum — MonForum{% endblock %}
+
+{% block content %}
+<div class="card border-danger">
+  <div class="card-header bg-danger text-white">
+    <h3 class="mb-0">Confirmer la suppression du forum</h3>
+  </div>
+  <div class="card-body">
+    <div class="alert alert-warning">
+      <strong>Attention !</strong> Cette action est irréversible et supprimera également tous les threads et sondages associés à ce forum.
+    </div>
+
+    <div class="mb-3">
+      <h5>Forum à supprimer :</h5>
+      <div class="card">
+        <div class="card-body">
+          <h6>{{ object.title }}</h6>
+          <p>{{ object.description }}</p>
+          <small class="text-muted">
+            Créé par {{ object.created_by.username }} le {{ object.created_at|date:"d M Y" }}<br>
+            Contient {{ object.threads.count }} thread(s) et {{ object.surveys.count }} sondage(s)
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <p>Êtes-vous sûr(e) de vouloir supprimer ce forum ?</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-danger">Oui, supprimer le forum</button>
+        <a href="{% url 'forum:forum-detail' object.pk %}" class="btn btn-secondary">Annuler</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

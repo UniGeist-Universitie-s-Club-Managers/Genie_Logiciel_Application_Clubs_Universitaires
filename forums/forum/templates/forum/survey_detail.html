@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ survey.title }} — MonForum{% endblock %}
+
+{% block extra_css %}
+<style>
+.survey-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.card {
+  background: rgba(0,0,0,0.55);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.card-header {
+  background: rgba(33,37,41,0.8);
+  color: #ffffffff;
+}
+
+.progress {
+  height: 22px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="survey-container">
+
+  <h2 class="mb-2">{{ survey.title }}</h2>
+  <p class="text-muted">
+    par {{ survey.author.username }} — {{ survey.created_at|date:"d M Y H:i" }}
+  </p>
+
+  {% if can_manage_survey %}
+    <div class="mb-3">
+      <form method="post" action="{% url 'forum:survey-add-option' survey.pk %}" class="row g-2">
+        {% csrf_token %}
+        <div class="col-auto">
+          <input name="text" class="form-control" placeholder="Nouvelle option" required>
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-outline-primary" type="submit">Ajouter une option</button>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+
+  <!-- ===== FORMULAIRE DE VOTE ===== -->
+  {% if can_vote and survey.options.exists %}
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">Voter</h5>
+    </div>
+    <div class="card-body">
+      <form method="post" action="{% url 'forum:survey-vote' survey.pk %}">
+        {% csrf_token %}
+
+        {% for option in survey.options.all %}
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="radio"
+                   name="option"
+                   id="option{{ option.pk }}"
+                   value="{{ option.pk }}"
+                   {% if user_vote and user_vote == option.pk %}checked{% endif %}
+                   required>
+            <label class="form-check-label" for="option{{ option.pk }}">
+              {{ option.text }}
+            </label>
+          </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-success mt-3">
+          {% if user_has_voted %}✏️ Modifier mon vote{% else %}🗳️ Voter{% endif %}
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if user_has_voted %}
+    <div class="alert alert-success">
+      ✅ Vous avez déjà voté à ce sondage. Tu peux modifier ton choix ci-dessus.
+    </div>
+  {% endif %}
+
+  {% if not can_vote and user.is_authenticated %}
+    <div class="alert alert-warning">
+      ⚠️ Vous n’avez pas le droit de voter à ce sondage.
+    </div>
+  {% endif %}
+
+  <!-- ===== RÉSULTATS ===== -->
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">
+        Résultats ({{ total_votes }} vote{{ total_votes|pluralize }})
+      </h5>
+    </div>
+    <div class="card-body">
+      {% for item in options_with_votes %}
+        <div class="mb-3">
+          <div class="d-flex justify-content-between">
+            <strong>{{ item.option.text }}</strong>
+            <span>
+              {{ item.vote_count }} ({{ item.percentage }}%)
+              <a class="btn btn-sm btn-link" href="{% url 'forum:survey-option-voters' survey.pk item.option.pk %}">Voir votants</a>
+            </span>
+          </div>
+          <div class="progress">
+            <div class="progress-bar bg-success"
+                 style="width: {{ item.percentage }}%;">
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-muted">Aucun vote pour le moment.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <a href="{% url 'forum:survey-list' %}" class="btn btn-link mt-3">
+    ← Retour aux sondages
+  </a>
+</div>
+{% endblock %}
+

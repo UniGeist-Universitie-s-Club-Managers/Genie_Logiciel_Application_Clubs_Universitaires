@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Modifier le sujet{% else %}Nouveau sujet{% endif %} — MonForum{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Formulaire de création / modification de sujet */
+
+.card {
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+.card-body {
+  padding: 20px;
+  color: #f8f9fa;
+}
+
+h4.card-title {
+  color: #fff;
+}
+
+.form-label {
+  color: #f8f9fa;
+  font-weight: 500;
+}
+
+.form-text {
+  color: rgba(255,255,255,0.6);
+}
+
+input.form-control,
+textarea.form-control,
+select.form-select {
+  background-color: rgba(255,255,255,0.05);
+  color: #f8f9fa;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+}
+
+input.form-control:focus,
+textarea.form-control:focus,
+select.form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.25);
+  background-color: rgba(255,255,255,0.08);
+  color: #f8f9fa;
+}
+
+button.btn-primary {
+  border-radius: 10px;
+  padding: 6px 16px;
+}
+
+a.btn-link {
+  color: #f8f9fa;
+  text-decoration: underline;
+}
+
+a.btn-link:hover {
+  color: #0d6efd;
+  text-decoration: none;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title mb-3">{% if form.instance.pk %}Modifier le sujet{% else %}Nouveau sujet{% endif %}</h4>
+        <form method="post">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          
+          <div class="mb-3">
+            <label class="form-label">{{ form.forum.label }}</label>
+            {{ form.forum.errors }}
+            {{ form.forum }}
+            <div class="form-text">Choisis le forum dans lequel publier ce sujet.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Titre</label>
+            {{ form.title.errors }}
+            {{ form.title }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Contenu</label>
+            {{ form.body.errors }}
+            {{ form.body }}
+            <div class="form-text">Tu peux utiliser plusieurs lignes. Le texte sera affiché avec des sauts de ligne préservés.</div>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'forum:thread-list' %}" class="btn btn-link">Annuler</a>
+            <button class="btn btn-primary" type="submit">{% if form.instance.pk %}Enregistrer{% else %}Publier{% endif %}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

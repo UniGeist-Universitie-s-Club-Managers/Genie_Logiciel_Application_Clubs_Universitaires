@@ -8,7 +8,8 @@ from .models import Club, Demande_creation_club
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from weasyprint import HTML
+# from weasyprint import HTML  # Optional - requires system libraries
+HTML = None
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
@@ -21,7 +22,13 @@ def home_view(request):
     return render(request, 'home.html')
 
 class HomeView(TemplateView):
-    template_name = 'home.html'
+    template_name = 'club/list.html'
+    context_object_name = 'clubs'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clubs'] = Club.objects.all()
+        return context
 
 # class ClubListView(ListView):
 #     model = Club
@@ -77,7 +84,7 @@ class DetailView(DetailView):
     
 class DeleteView(DeleteView):
     model = Club
-    fiels ="_all_"
+    fiels ="__all__"
     template_name = 'club/club_confirm_delete.html'
     success_url = '/club/list/'
     def test_func(self):

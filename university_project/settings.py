@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'clubApp',
     'appEvenements',
     'resources',
-    'forum',
+    'forums.forum',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sondages — MonForum{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">
+    <i class="fas fa-poll me-2 text-primary"></i>Sondages
+  </h1>
+  {% if can_create_survey %}
+    <a class="btn btn-success" href="{% url 'forum:survey-create' %}">
+      <i class="fas fa-plus me-1"></i> Nouveau sondage
+    </a>
+  {% endif %}
+</div>
+
+{% if surveys %}
+  <div class="list-group">
+    {% for survey in surveys %}
+      <div class="list-group-item py-3">
+        <div class="d-flex w-100 justify-content-between align-items-start">
+          <div class="flex-grow-1">
+            <h5 class="mb-1">
+              <a href="{% url 'forum:survey-detail' survey.pk %}" class="text-decoration-none text-dark fw-bold">
+                {{ survey.title }}
+              </a>
+            </h5>
+
+            {% if survey.description %}
+              <p class="mb-1 text-muted">{{ survey.description|truncatewords:15 }}</p>
+            {% endif %}
+
+            <small class="text-muted">
+              par {{ survey.author.get_full_name|default:survey.author.username }} —
+              {{ survey.created_at|date:"d M Y" }}
+              {% if survey.forum %}
+                &middot; dans <strong>{{ survey.forum.title }}</strong>
+              {% endif %}
+            </small>
+          </div>
+
+          <div class="text-end d-flex flex-column align-items-end gap-2 ms-3">
+            <div>
+              <span class="badge bg-info rounded-pill me-1 px-3 py-2">
+                {{ survey.votes.count }} vote{{ survey.votes.count|pluralize }}
+              </span>
+              <span class="badge bg-secondary rounded-pill px-3 py-2">
+                {{ survey.options.count }} option{{ survey.options.count|pluralize }}
+              </span>
+            </div>
+
+            {# Utiliser un attribut booléen non préfixé par underscore fourni par la vue #}
+            {% if survey.can_manage_for_user %}
+              <div>
+                <a href="{% url 'forum:survey-update' survey.pk %}" class="btn btn-sm btn-outline-secondary me-1"
+                   data-bs-toggle="tooltip" title="Modifier">
+                  <i class="fas fa-edit me-1"></i>Modifier
+                </a>
+                <a href="{% url 'forum:survey-delete' survey.pk %}" class="btn btn-sm btn-outline-danger"
+                   data-bs-toggle="tooltip" title="Supprimer">
+                  <i class="fas fa-trash me-1"></i>Supprimer
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# Pagination #}
+  {% if is_paginated %}
+    <nav aria-label="Pagination" class="mt-3">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Précédent">Précédent</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Précédent</span></li>
+        {% endif %}
+
+        <li class="page-item disabled">
+          <span class="page-link">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Suivant">Suivant</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Suivant</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+
+{% else %}
+  <div class="alert alert-info">
+    <div class="d-flex align-items-center gap-3">
+      <i class="fas fa-info-circle fa-2x"></i>
+      <div>
+        <strong>Aucun sondage pour l'instant.</strong>
+        {% if can_create_survey %}
+          &nbsp;<a href="{% url 'forum:survey-create' %}">Créer le premier sondage</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<div class="mt-4">
+  <a href="{% url 'forum:thread-list' %}" class="btn btn-link">&larr; Retour aux discussions</a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(function (el) {
+    try { new bootstrap.Tooltip(el); } catch(e) { /* ignore si bootstrap non chargé */ }
+  });
+
+  // Empêche la propagation des clics sur les boutons d'action (au cas où)
+  document.querySelectorAll('.list-group-item .btn').forEach(function(btn){
+    btn.addEventListener('click', function(ev){ ev.stopPropagation(); });
+  });
+});
+</script>
+{% endblock %}

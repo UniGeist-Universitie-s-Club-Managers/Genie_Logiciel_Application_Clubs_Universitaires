@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Vérification de votre email</title>
+</head>
+<body>
+    <h2>Bonjour {{ user.username }},</h2>
+    <p>Merci pour ton inscription sur {{ site_name }}.</p>
+    <p>Clique sur le lien suivant pour vérifier ton adresse email :</p>
+    <p><a href="{{ verify_url }}">Vérifier mon compte</a></p>
+    <p>Si tu n'as pas créé de compte, ignore cet email.</p>
+</body>
+</html>

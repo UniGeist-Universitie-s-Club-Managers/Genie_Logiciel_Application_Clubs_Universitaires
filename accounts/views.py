@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.utils import timezone
 from .models import User, Membership, Contribution, EventParticipation, UserBadge
@@ -180,7 +180,6 @@ def send_test_email(request):
     )
     return HttpResponse("Email envoyé ! Vérifie ta boîte Gmail.")
 
-
 def fake_verify_success(request):
     return render(request, "accounts/verify_success.html")
 
@@ -204,22 +203,8 @@ def events_home_view(request):
     return render(request, 'events_home.html', context)
 
 def forums_home_view(request):
-    from appEvenements.models import Evenement
-    events = Evenement.objects.filter(statut__in=['planifie', 'en_cours']).order_by('date_debut')[:6]
-    featured_events = Evenement.objects.filter(visibilite='public').order_by('-date_creation')[:3]
-    total_events = Evenement.objects.count()
-    upcoming_events = Evenement.objects.filter(statut='planifie').count()
-    active_events = Evenement.objects.filter(statut='en_cours').count()
-    completed_events = Evenement.objects.filter(statut='termine').count()
-    context = {
-        'events': events,
-        'featured_events': featured_events,
-        'total_events': total_events,
-        'upcoming_events': upcoming_events,
-        'active_events': active_events,
-        'completed_events': completed_events,
-    }
-    return render(request, 'forums_home.html', context)
+    from django.shortcuts import redirect
+    return redirect('forum:thread-list')
 
 def resources_home_view(request):
     recent_resources = Resource.objects.filter(is_validated=True).order_by('-date_submitted')[:6]
@@ -244,3 +229,144 @@ def help_home_view(request):
         'total_aids': total_aids,
     }
     return render(request, 'help_home.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_panel(request):
+    """Interface admin personnalisée accessible uniquement aux admins"""
+    context = {
+        'title': 'Panneau d\'Administration',
+        'entities': [
+            {
+                'name': 'Comptes',
+                'url': 'admin_accounts',
+                'description': 'Gérer les utilisateurs, badges, clubs, adhésions'
+            },
+            {
+                'name': 'Événements',
+                'url': 'admin_events',
+                'description': 'Gérer les événements et participations'
+            },
+            {
+                'name': 'Forums',
+                'url': 'admin_forums',
+                'description': 'Gérer les forums, sujets et sondages'
+            },
+            {
+                'name': 'Ressources',
+                'url': 'admin_resources',
+                'description': 'Gérer les ressources éducatives'
+            },
+            {
+                'name': 'Aides',
+                'url': 'admin_aids',
+                'description': 'Gérer les demandes d\'aide'
+            },
+            {
+                'name': 'Clubs',
+                'url': 'admin_clubs',
+                'description': 'Gérer les clubs et leurs membres'
+            },
+            {
+                'name': 'Sondages',
+                'url': 'admin_surveys',
+                'description': 'Gérer les sondages et options'
+            },
+            {
+                'name': 'Sujets',
+                'url': 'admin_threads',
+                'description': 'Gérer les sujets de discussion'
+            },
+        ]
+    }
+    return render(request, 'admin_panel.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_accounts(request):
+    """Interface admin pour les comptes"""
+    users = User.objects.all().order_by('-date_joined')
+    context = {
+        'title': 'Administration des Comptes',
+        'object_list': users,
+        'entity_name': 'Comptes'
+    }
+    return render(request, 'admin_accounts.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_events(request):
+    """Interface admin pour les événements"""
+    events = Evenement.objects.all().order_by('-date_debut')
+    context = {
+        'title': 'Administration des Événements',
+        'object_list': events,
+        'entity_name': 'Événements'
+    }
+    return render(request, 'admin_events.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_forums(request):
+    """Interface admin pour les forums"""
+    from forums.forum.models import Forum
+    forums = Forum.objects.all()
+    context = {
+        'title': 'Administration des Forums',
+        'object_list': forums,
+        'entity_name': 'Forums'
+    }
+    return render(request, 'admin_forums.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_resources(request):
+    """Interface admin pour les ressources"""
+    resources = Resource.objects.all().order_by('-date_submitted')
+    context = {
+        'title': 'Administration des Ressources',
+        'object_list': resources,
+        'entity_name': 'Ressources'
+    }
+    return render(request, 'admin_resources.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_aids(request):
+    """Interface admin pour les aides"""
+    aids = Aid.objects.all().order_by('-date_submitted')
+    context = {
+        'title': 'Administration des Aides',
+        'object_list': aids,
+        'entity_name': 'Aides'
+    }
+    return render(request, 'admin_aids.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_clubs(request):
+    """Interface admin pour les clubs"""
+    clubs = Club.objects.all()
+    context = {
+        'title': 'Administration des Clubs',
+        'object_list': clubs,
+        'entity_name': 'Clubs'
+    }
+    return render(request, 'admin_clubs.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_surveys(request):
+    """Interface admin pour les sondages"""
+    from forums.forum.models import Survey
+    surveys = Survey.objects.all().order_by('-created_at')
+    context = {
+        'title': 'Administration des Sondages',
+        'object_list': surveys,
+        'entity_name': 'Sondages'
+    }
+    return render(request, 'admin_surveys.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_threads(request):
+    """Interface admin pour les sujets"""
+    from forums.forum.models import Thread
+    threads = Thread.objects.all().order_by('-created_at')
+    context = {
+        'title': 'Administration des Sujets',
+        'object_list': threads,
+        'entity_name': 'Sujets'
+    }
+    return render(request, 'admin_threads.html', context)

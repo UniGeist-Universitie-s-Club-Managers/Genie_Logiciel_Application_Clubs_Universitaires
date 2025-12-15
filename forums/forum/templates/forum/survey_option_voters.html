@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Votants — {{ option.text }} — {{ survey.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Votants pour "{{ option.text }}"</h2>
+  <p class="text-muted">Sondage : {{ survey.title }}</p>
+
+  {% if voters %}
+    <ul class="list-group mb-3">
+      {% for user in voters %}
+        <li class="list-group-item">{{ user.get_full_name|default:user.username }} <small class="text-muted">({{ user.email }})</small></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-light">Aucun votant pour cette option.</div>
+  {% endif %}
+
+  <a class="btn btn-link" href="{% url 'forum:survey-detail' survey.pk %}">&larr; Retour au sondage</a>
+</div>
+{% endblock %}

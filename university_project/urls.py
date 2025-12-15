@@ -19,15 +19,27 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from accounts.views import admin_panel, admin_accounts, admin_events, admin_forums, admin_resources, admin_aids, admin_clubs, admin_surveys, admin_threads
+from accounts.views import admin_panel
 
 urlpatterns = [
     path('', RedirectView.as_view(url='/accounts/clubs-home/', permanent=False), name='home'),
-    path('admin/', admin.site.urls),
+    path('admin/', admin_panel, name='admin_panel'),
+    path('admin/accounts/', admin_accounts, name='admin_accounts'),
+    path('admin/events/', admin_events, name='admin_events'),
+    path('admin/forums/', admin_forums, name='admin_forums'),
+    path('admin/resources/', admin_resources, name='admin_resources'),
+    path('admin/aids/', admin_aids, name='admin_aids'),
+    path('admin/clubs/', admin_clubs, name='admin_clubs'),
+    path('admin/surveys/', admin_surveys, name='admin_surveys'),
+    path('admin/threads/', admin_threads, name='admin_threads'),
+    path('django-admin/', admin.site.urls),  # Django's admin moved to /django-admin/
     path('club/', include('clubApp.urls')),
     path('evenements/', include('appEvenements.urls')),
     path('resources/', include('resources.urls')),
     path('accounts/', include('accounts.urls')),
-    path('forum/', include('forum.urls')),
+    path('forum/', include('forums.forum.urls', namespace='forum')),
+
 
 
 ]
