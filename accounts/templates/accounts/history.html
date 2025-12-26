@@ -106,14 +106,14 @@ body {
 <div class="page-container">
     <div class="sidebar">
         <h3>Navigation</h3>
-        <a href="{% url 'profile' %}">Profil</a>
-        <a href="{% url 'user_history' %}" class="active">Historique</a>
-        <a href="{% url 'dashboard' %}">Mes Clubs</a>
-        <a href="{% url 'dashboard' %}">Évènements</a>
-        <a href="{% url 'dashboard' %}">Forums</a>
-        <a href="{% url 'dashboard' %}">Aides</a>
-        <a href="{% url 'dashboard' %}">Ressources</a>
-        <a href="{% url 'chatbot' %}">Chatbot</a>
+        <a href="{% url 'accounts:profile' %}">Profil</a>
+        <a href="{% url 'accounts:user_history' %}" class="active">Historique</a>
+        <a href="{% url 'clubApp:dashboard' %}">Mes Clubs</a>
+        <a href="{% url 'appEvenements:home' %}">Évènements</a>
+        <a href="{% url 'forum:thread-list' %}">Forums</a>
+        <a href="{% url 'accounts:admin_panel' %}">Aides</a>
+        <a href="{% url 'resources:home' %}">Ressources</a>
+        <a href="{% url 'accounts:chatbot' %}">Chatbot</a>
     </div>
 
     <div class="main-content">

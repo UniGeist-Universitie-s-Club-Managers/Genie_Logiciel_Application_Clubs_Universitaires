@@ -34,10 +34,10 @@ urlpatterns = [
     path('admin/surveys/', admin_surveys, name='admin_surveys'),
     path('admin/threads/', admin_threads, name='admin_threads'),
     path('django-admin/', admin.site.urls),  # Django's admin moved to /django-admin/
-    path('club/', include('clubApp.urls')),
-    path('evenements/', include('appEvenements.urls')),
+    path('club/', include('clubApp.urls', namespace='clubApp')),
+    path('evenements/', include('appEvenements.urls', namespace='appEvenements')),
     path('resources/', include('resources.urls')),
-    path('accounts/', include('accounts.urls')),
+    path('accounts/', include('accounts.urls', namespace='accounts')),
     path('forum/', include('forums.forum.urls', namespace='forum')),
 
 

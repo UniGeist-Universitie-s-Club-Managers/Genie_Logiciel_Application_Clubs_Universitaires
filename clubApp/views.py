@@ -114,28 +114,33 @@ class DemandeCreationClubView(CreateView):
         president_name = form.cleaned_data.get('president_name')
         vice_president_name = form.cleaned_data.get('vice_president_name')
         requested_by = form.cleaned_data.get('requested_by')
-        
-        # 3) Générer le HTML pour le PDF
-        html_string = render_to_string(
-    'club/pdf_template.html',
-    {
-        'club_name': club_name,
-        'email': email,  # correspond au template
-        'email_club': email_club,
-        'president_name': president_name,
-        'vice_president_name': vice_president_name,
-        'requested_by': requested_by
-    }
-)
 
-        # 4) Générer le PDF
-        pdf = HTML(string=html_string).write_pdf()
+        if HTML is not None:
+            # 3) Générer le HTML pour le PDF
+            html_string = render_to_string(
+        'club/pdf_template.html',
+        {
+            'club_name': club_name,
+            'email': email,  # correspond au template
+            'email_club': email_club,
+            'president_name': president_name,
+            'vice_president_name': vice_president_name,
+            'requested_by': requested_by
+        }
+    )
 
-        # 5) Retourner le PDF en réponse HTTP (téléchargement)
-        response = HttpResponse(pdf, content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="extrait.pdf"'
-        
-        return response
+            # 4) Générer le PDF
+            pdf = HTML(string=html_string).write_pdf()
+
+            # 5) Retourner le PDF en réponse HTTP (téléchargement)
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="extrait.pdf"'
+
+            return response
+        else:
+            # Si weasyprint n'est pas disponible, rediriger vers la liste des demandes
+            messages.info(self.request, "Demande soumise avec succès. PDF non généré (weasyprint non installé).")
+            return redirect(self.success_url)
 
 class DemandeListView(ListView):
     model = Demande_creation_club

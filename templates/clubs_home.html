@@ -15,7 +15,7 @@
                 <div class="card-body">
                     <h2 class="card-title"><i class="fas fa-users"></i> Utilisateurs</h2>
                     <p class="card-text">Gérez les profils des étudiants, administrateurs et membres des clubs. Inscrivez-vous, connectez-vous et personnalisez votre expérience.</p>
-                    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">Accéder au Dashboard</a>
+                    <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-primary">Accéder au Dashboard</a>
                 </div>
             </div>
         </div>
@@ -33,7 +33,7 @@
                 <div class="card-body">
                     <h2 class="card-title"><i class="fas fa-users-cog"></i> Clubs</h2>
                     <p class="card-text">Découvrez et rejoignez des clubs variés : sports, culturels, académiques. Créez votre propre club et gérez ses membres.</p>
-                    <a href="{% url 'home' %}" class="btn btn-outline-primary">Explorer</a>
+                    <a href="{% url 'clubApp:club_list_view' %}" class="btn btn-outline-primary">Explorer</a>
                 </div>
             </div>
         </div>
@@ -51,7 +51,7 @@
                 <div class="card-body">
                     <h2 class="card-title"><i class="fas fa-calendar-alt"></i> Événements</h2>
                     <p class="card-text">Organisez et participez à des événements : conférences, ateliers, compétitions. Restez informé des dates et inscriptions.</p>
-                    <a href="{% url 'events_home' %}" class="btn btn-outline-primary">Voir les Événements</a>
+                    <a href="{% url 'accounts:events_home' %}" class="btn btn-outline-primary">Voir les Événements</a>
                 </div>
             </div>
         </div>
@@ -69,7 +69,7 @@
                 <div class="card-body">
                     <h2 class="card-title"><i class="fas fa-comments"></i> Forum</h2>
                     <p class="card-text">Échangez avec la communauté universitaire. Posez des questions, partagez des idées et discutez des sujets qui vous passionnent.</p>
-                    <a href="{% url 'forums_home' %}" class="btn btn-outline-primary">Accéder au Forum</a>
+                    <a href="{% url 'accounts:forums_home' %}" class="btn btn-outline-primary">Accéder au Forum</a>
                 </div>
             </div>
         </div>
@@ -87,7 +87,7 @@
                 <div class="card-body">
                     <h2 class="card-title"><i class="fas fa-question-circle"></i> Aides</h2>
                     <p class="card-text">Besoin d'aide ? Consultez nos guides, FAQs et tutoriels pour naviguer facilement sur la plateforme.</p>
-                    <a href="{% url 'help_home' %}" class="btn btn-outline-primary">Obtenir de l'Aide</a>
+                    <a href="{% url 'accounts:help_home' %}" class="btn btn-outline-primary">Obtenir de l'Aide</a>
                 </div>
             </div>
         </div>
@@ -105,7 +105,7 @@
                 <div class="card-body">
                     <h2 class="card-title"><i class="fas fa-book"></i> Ressources</h2>
                     <p class="card-text">Accédez à des documents, templates et outils pour vos clubs et projets universitaires.</p>
-                    <a href="{% url 'resources_home' %}" class="btn btn-outline-primary">Télécharger</a>
+                    <a href="{% url 'accounts:resources_home' %}" class="btn btn-outline-primary">Télécharger</a>
                 </div>
             </div>
         </div>

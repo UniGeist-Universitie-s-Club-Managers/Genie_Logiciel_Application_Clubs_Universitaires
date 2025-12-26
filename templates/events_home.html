@@ -12,16 +12,16 @@
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <h1 class="display-4 font-weight-bold mb-4 animate__animated animate__fadeInUp">
-                    <i class="fas fa-university mr-3"></i>Clubs Universitaires
+                    <i class="fas fa-university mr-3"></i>Evenements Universitaires
                 </h1>
                 <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-1s">
                     Rejoignez la communauté étudiante, participez aux événements et développez vos passions !
                 </p>
                 <div class="animate__animated animate__fadeInUp animate__delay-2s">
-                    <a href="{% url 'liste' %}" class="btn btn-light btn-lg mr-3">
+                    <a href="{% url 'appEvenements:liste' %}" class="btn btn-light btn-lg mr-3">
                         <i class="fas fa-calendar-alt mr-2"></i>Voir tous les événements
                     </a>
-                    <a href="{% url 'calendar' %}" class="btn btn-outline-light btn-lg">
+                    <a href="{% url 'appEvenements:calendar' %}" class="btn btn-outline-light btn-lg">
                         <i class="fas fa-calendar mr-2"></i>Calendrier interactif
                     </a>
                 </div>
@@ -59,9 +59,8 @@
         </div>
     </div>
 </div>
-
-<!-- Featured Events Section -->
-<section class="featured-events py-5" style="background: #f8f9fa;">
+<!-- Upcoming Events Section -->
+<section class="upcoming-events py-5" style="background: #ffffff;">
     <div class="container">
         <div class="row mb-5">
             <div class="col-12 text-center">
@@ -77,29 +76,6 @@
             {% for event in events %}
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="event-card card h-100 border-0 shadow-sm animate__animated animate__fadeInUp" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
-                    {% if event.promotion_image %}
-                    <div class="card-img-top" style="height: 200px; background: url('{{ event.promotion_image.url }}') center/cover no-repeat; position: relative;">
-                        <div class="card-header" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%); color: white; border: none; padding: 15px; position: absolute; bottom: 0; left: 0; right: 0;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="card-title mb-1">{{ event.titre }}</h5>
-                                    <small><i class="fas fa-map-marker-alt mr-1"></i>{{ event.lieu }}</small>
-                                </div>
-                                <span class="badge badge-light">
-                                    {% if event.statut == 'planifie' %}
-                                        <i class="fas fa-clock mr-1"></i>Planifié
-                                    {% elif event.statut == 'en_cours' %}
-                                        <i class="fas fa-play-circle mr-1"></i>En cours
-                                    {% elif event.statut == 'termine' %}
-                                        <i class="fas fa-check-circle mr-1"></i>Terminé
-                                    {% else %}
-                                        <i class="fas fa-times-circle mr-1"></i>Annulé
-                                    {% endif %}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    {% else %}
                     <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 20px;">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -119,7 +95,6 @@
                             </span>
                         </div>
                     </div>
-                    {% endif %}
                     <div class="card-body">
                         <div class="event-details mb-3">
                             <div class="row text-center">
@@ -152,7 +127,7 @@
                                     <i class="fas fa-lock text-warning mr-1"></i>Privé
                                 {% endif %}
                             </small>
-                            <a href="{% url 'details' event.id %}" class="btn btn-primary btn-sm">
+                            <a href="{% url 'appEvenements:details' event.id %}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-eye mr-1"></i>Détails
                             </a>
                         </div>
@@ -164,7 +139,7 @@
 
         <div class="row mt-4">
             <div class="col-12 text-center">
-                <a href="{% url 'liste' %}" class="btn btn-outline-primary btn-lg">
+                <a href="{% url 'appEvenements:liste' %}" class="btn btn-outline-primary btn-lg">
                     <i class="fas fa-list mr-2"></i>Voir tous les événements
                 </a>
             </div>
@@ -176,8 +151,78 @@
                     <div class="empty-state">
                         <i class="fas fa-calendar-alt fa-5x text-muted mb-4"></i>
                         <h3 class="text-muted mb-3">Aucun événement à venir</h3>
+                        <p class="text-muted mb-4">Les événements à venir apparaîtront ici dès qu'ils seront programmés.</p>
+                        <a href="{% url 'appEvenements:liste' %}" class="btn btn-primary">
+                            <i class="fas fa-calendar-plus mr-2"></i>Consulter tous les événements
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Featured Events Section -->
+<section class="featured-events py-5" style="background: #f8f9fa;">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-5 font-weight-bold mb-3" style="color: #333;">
+                    <i class="fas fa-star text-warning mr-3"></i>Événements à la Une
+                </h2>
+                <p class="lead text-muted">Découvrez les événements les plus attendus de nos clubs universitaires</p>
+            </div>
+        </div>
+
+        {% if featured_events %}
+        <div class="row">
+            {% for event in featured_events %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="event-card card h-100 border-0 shadow-sm animate__animated animate__fadeInUp" style="border-radius: 15px; overflow: hidden; transition: all 0.3s ease;">
+                    {% if event.promotion_image and event.promotion_image.url %}
+                    <div class="card-img-top position-relative" style="border-radius: 15px 15px 0 0; overflow: hidden;">
+                        <img src="{{ event.promotion_image.url }}" alt="{{ event.titre }}" class="w-100" style="height: 250px; object-fit: cover;">
+                        <div class="image-overlay position-absolute bottom-0 start-0 end-0 bg-gradient-dark p-3" style="border-radius: 0 0 15px 15px;">
+                            <h5 class="card-title text-white mb-2">{{ event.titre }}</h5>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="card-img-top position-relative" style="border-radius: 15px 15px 0 0; overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 250px; display: flex; align-items: center; justify-content: center;">
+                        <div class="text-center" style="color: white;">
+                            <i class="fas fa-calendar-alt fa-5x mb-3"></i>
+                            <p class="mb-0">{{ event.titre }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="card-body" style="min-height: 120px;">
+                        <h6 class="card-title text-center mb-3">{{ event.titre }}</h6>
+                        {% if event.promotion_description %}
+                            <p class="card-text">{{ event.promotion_description|truncatechars:150 }}</p>
+                        {% else %}
+                            <p class="card-text text-muted">{{ event.description|truncatechars:150 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+<div class="row mt-4">
+            <div class="col-12 text-center">
+                <a href="{% url 'appEvenements:liste' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-list mr-2"></i>Voir tous les événements
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-alt fa-5x text-muted mb-4"></i>
+                        <h3 class="text-muted mb-3">Aucun événement en vedette</h3>
                         <p class="text-muted mb-4">Les événements à la une apparaîtront ici dès qu'ils seront programmés.</p>
-                        <a href="{% url 'liste' %}" class="btn btn-primary">
+                        <a href="{% url 'appEvenements:liste' %}" class="btn btn-primary">
                             <i class="fas fa-calendar-plus mr-2"></i>Consulter tous les événements
                         </a>
                     </div>
@@ -209,7 +254,7 @@
                         </div>
                         <h5 class="card-title">Créer un Événement</h5>
                         <p class="card-text text-muted">Organisez un nouvel événement pour votre club</p>
-                        <a href="{% url 'ajouter' %}" class="btn btn-primary">
+                        <a href="{% url 'appEvenements:ajouter' %}" class="btn btn-primary">
                             <i class="fas fa-plus mr-2"></i>Créer
                         </a>
                     </div>
@@ -224,7 +269,7 @@
                         </div>
                         <h5 class="card-title">Calendrier Interactif</h5>
                         <p class="card-text text-muted">Visualisez tous les événements dans un calendrier</p>
-                        <a href="{% url 'calendar' %}" class="btn btn-success">
+                        <a href="{% url 'appEvenements:calendar' %}" class="btn btn-success">
                             <i class="fas fa-calendar mr-2"></i>Voir le calendrier
                         </a>
                     </div>
@@ -239,7 +284,7 @@
                         </div>
                         <h5 class="card-title">Administration</h5>
                         <p class="card-text text-muted">Gérez les événements et les utilisateurs</p>
-                        <a href="{% url 'admin_interface' %}" class="btn btn-info">
+                        <a href="{% url 'appEvenements:admin_interface' %}" class="btn btn-info">
                             <i class="fas fa-cogs mr-2"></i>Administrer
                         </a>
                     </div>
@@ -261,10 +306,10 @@
                     Participez à la vie étudiante, créez des souvenirs inoubliables et développez vos compétences !
                 </p>
                 <div>
-                    <a href="{% url 'liste' %}" class="btn btn-light btn-lg mr-3">
+                    <a href="{% url 'appEvenements:calendar' %}" class="btn btn-light btn-lg mr-3">
                         <i class="fas fa-search mr-2"></i>Explorer les événements
                     </a>
-                    <a href="{% url 'ajouter' %}" class="btn btn-outline-light btn-lg">
+                    <a href="{% url 'appEvenements:ajouter' %}" class="btn btn-outline-light btn-lg">
                         <i class="fas fa-plus mr-2"></i>Organiser un événement
                     </a>
                 </div>

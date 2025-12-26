@@ -7,6 +7,7 @@ from .models import User, Membership, Contribution, EventParticipation, UserBadg
 from .forms import RegisterForm
 from appEvenements.models import Evenement
 from resources.models import Resource, Aid, FAQ
+from clubApp.models import Club
 
 # -------------------- LOGIN --------------------
 def login_view(request):
@@ -20,7 +21,7 @@ def login_view(request):
             next_url = request.POST.get("next")
             if next_url:
                 return redirect(next_url)
-            return redirect("dashboard")
+            return redirect("accounts:dashboard")
         else:
             messages.error(request, "Identifiants incorrects.")
     return render(request, "accounts/login.html")
@@ -30,7 +31,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     messages.info(request, "Déconnecté.")
-    return redirect("login")
+    return redirect("accounts:login")
 
 # -------------------- REGISTER --------------------
 def register_view(request):
@@ -189,12 +190,14 @@ def clubs_home_view(request):
 
 def events_home_view(request):
     events = Evenement.objects.filter(statut__in=['planifie', 'en_cours']).order_by('date_debut')[:6]
+    featured_events = Evenement.objects.filter(featured=True).order_by('-date_debut')[:6]
     total_events = Evenement.objects.count()
     upcoming_events = Evenement.objects.filter(statut='planifie').count()
     active_events = Evenement.objects.filter(statut='en_cours').count()
     completed_events = Evenement.objects.filter(statut='termine').count()
     context = {
         'events': events,
+        'featured_events': featured_events,
         'total_events': total_events,
         'upcoming_events': upcoming_events,
         'active_events': active_events,
@@ -294,7 +297,10 @@ def admin_accounts(request):
 @user_passes_test(lambda u: u.is_superuser)
 def admin_events(request):
     """Interface admin pour les événements"""
-    events = Evenement.objects.all().order_by('-date_debut')
+    from django.db.models import Count
+    events = Evenement.objects.all().annotate(
+        participant_count=Count('participants')
+    ).order_by('-date_debut')
     context = {
         'title': 'Administration des Événements',
         'object_list': events,
@@ -339,7 +345,7 @@ def admin_aids(request):
 @user_passes_test(lambda u: u.is_superuser)
 def admin_clubs(request):
     """Interface admin pour les clubs"""
-    clubs = Club.objects.all()
+    clubs = Club.objects.all().order_by('-established_date')
     context = {
         'title': 'Administration des Clubs',
         'object_list': clubs,
@@ -370,3 +376,223 @@ def admin_threads(request):
         'entity_name': 'Sujets'
     }
     return render(request, 'admin_threads.html', context)
+
+# -------------------- ADMIN EDIT/DELETE VIEWS --------------------
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_user_edit(request, pk):
+    """Modifier un utilisateur"""
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        # Simple update - in production, use a proper form
+        user.username = request.POST.get('username', user.username)
+        user.email = request.POST.get('email', user.email)
+        user.first_name = request.POST.get('first_name', user.first_name)
+        user.last_name = request.POST.get('last_name', user.last_name)
+        user.is_active = request.POST.get('is_active') == 'on'
+        user.is_staff = request.POST.get('is_staff') == 'on'
+        user.is_superuser = request.POST.get('is_superuser') == 'on'
+        user.save()
+        messages.success(request, f'Utilisateur {user.username} modifié avec succès.')
+        return redirect('admin_accounts')
+    return render(request, 'admin_user_edit.html', {'user': user})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_user_delete(request, pk):
+    """Supprimer un utilisateur"""
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        username = user.username
+        user.delete()
+        messages.success(request, f'Utilisateur {username} supprimé avec succès.')
+        return redirect('admin_accounts')
+    return render(request, 'admin_user_delete.html', {'user': user})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_event_edit(request, pk):
+    """Modifier un événement"""
+    event = get_object_or_404(Evenement, pk=pk)
+    if request.method == 'POST':
+        # Simple update - in production, use a proper form
+        event.titre = request.POST.get('titre', event.titre)
+        event.description = request.POST.get('description', event.description)
+        event.save()
+        messages.success(request, f'Événement {event.titre} modifié avec succès.')
+        return redirect('admin_events')
+    return render(request, 'admin_event_edit.html', {'event': event})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_event_delete(request, pk):
+    """Supprimer un événement"""
+    event = get_object_or_404(Evenement, pk=pk)
+    if request.method == 'POST':
+        titre = event.titre
+        event.delete()
+        messages.success(request, f'Événement {titre} supprimé avec succès.')
+        return redirect('admin_events')
+    return render(request, 'admin_event_delete.html', {'event': event})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_forum_edit(request, pk):
+    """Modifier un forum"""
+    from forums.forum.models import Forum
+    forum = get_object_or_404(Forum, pk=pk)
+    if request.method == 'POST':
+        forum.name = request.POST.get('name', forum.name)
+        forum.description = request.POST.get('description', forum.description)
+        forum.save()
+        messages.success(request, f'Forum {forum.name} modifié avec succès.')
+        return redirect('admin_forums')
+    return render(request, 'admin_forum_edit.html', {'forum': forum})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_forum_delete(request, pk):
+    """Supprimer un forum"""
+    from forums.forum.models import Forum
+    forum = get_object_or_404(Forum, pk=pk)
+    if request.method == 'POST':
+        name = forum.name
+        forum.delete()
+        messages.success(request, f'Forum {name} supprimé avec succès.')
+        return redirect('admin_forums')
+    return render(request, 'admin_forum_delete.html', {'forum': forum})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_resource_edit(request, pk):
+    """Modifier une ressource"""
+    resource = get_object_or_404(Resource, pk=pk)
+    if request.method == 'POST':
+        resource.title = request.POST.get('title', resource.title)
+        resource.description = request.POST.get('description', resource.description)
+        resource.is_validated = request.POST.get('is_validated') == 'on'
+        resource.save()
+        messages.success(request, f'Ressource {resource.title} modifiée avec succès.')
+        return redirect('admin_resources')
+    return render(request, 'admin_resource_edit.html', {'resource': resource})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_resource_delete(request, pk):
+    """Supprimer une ressource"""
+    resource = get_object_or_404(Resource, pk=pk)
+    if request.method == 'POST':
+        title = resource.title
+        resource.delete()
+        messages.success(request, f'Ressource {title} supprimée avec succès.')
+        return redirect('admin_resources')
+    return render(request, 'admin_resource_delete.html', {'resource': resource})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_aid_edit(request, pk):
+    """Modifier une aide"""
+    aid = get_object_or_404(Aid, pk=pk)
+    if request.method == 'POST':
+        aid.title = request.POST.get('title', aid.title)
+        aid.description = request.POST.get('description', aid.description)
+        aid.is_validated = request.POST.get('is_validated') == 'on'
+        aid.save()
+        messages.success(request, f'Aide {aid.title} modifiée avec succès.')
+        return redirect('admin_aids')
+    return render(request, 'admin_aid_edit.html', {'aid': aid})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_aid_delete(request, pk):
+    """Supprimer une aide"""
+    aid = get_object_or_404(Aid, pk=pk)
+    if request.method == 'POST':
+        title = aid.title
+        aid.delete()
+        messages.success(request, f'Aide {title} supprimée avec succès.')
+        return redirect('admin_aids')
+    return render(request, 'admin_aid_delete.html', {'aid': aid})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_club_edit(request, pk):
+    """Modifier un club"""
+    club = get_object_or_404(Club, pk=pk)
+    if request.method == 'POST':
+        club.name = request.POST.get('name', club.name)
+        club.description = request.POST.get('description', club.description)
+        club.save()
+        messages.success(request, f'Club {club.name} modifié avec succès.')
+        return redirect('admin_clubs')
+    return render(request, 'admin_club_edit.html', {'club': club})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_club_delete(request, pk):
+    """Supprimer un club"""
+    club = get_object_or_404(Club, pk=pk)
+    if request.method == 'POST':
+        name = club.name
+        club.delete()
+        messages.success(request, f'Club {name} supprimé avec succès.')
+        return redirect('admin_clubs')
+    return render(request, 'admin_club_delete.html', {'club': club})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_survey_edit(request, pk):
+    """Modifier un sondage"""
+    from forums.forum.models import Survey
+    survey = get_object_or_404(Survey, pk=pk)
+    if request.method == 'POST':
+        survey.question = request.POST.get('question', survey.question)
+        survey.save()
+        messages.success(request, f'Sondage modifié avec succès.')
+        return redirect('admin_surveys')
+    return render(request, 'admin_survey_edit.html', {'survey': survey})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_survey_delete(request, pk):
+    """Supprimer un sondage"""
+    from forums.forum.models import Survey
+    survey = get_object_or_404(Survey, pk=pk)
+    if request.method == 'POST':
+        survey.delete()
+        messages.success(request, f'Sondage supprimé avec succès.')
+        return redirect('admin_surveys')
+    return render(request, 'admin_survey_delete.html', {'survey': survey})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_thread_edit(request, pk):
+    """Modifier un sujet"""
+    from forums.forum.models import Thread
+    thread = get_object_or_404(Thread, pk=pk)
+    if request.method == 'POST':
+        thread.title = request.POST.get('title', thread.title)
+        thread.save()
+        messages.success(request, f'Sujet {thread.title} modifié avec succès.')
+        return redirect('admin_threads')
+    return render(request, 'admin_thread_edit.html', {'thread': thread})
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_thread_delete(request, pk):
+    """Supprimer un sujet"""
+    from forums.forum.models import Thread
+    thread = get_object_or_404(Thread, pk=pk)
+    if request.method == 'POST':
+        title = thread.title
+        thread.delete()
+        messages.success(request, f'Sujet {title} supprimé avec succès.')
+        return redirect('admin_threads')
+    return render(request, 'admin_thread_delete.html', {'thread': thread})
+
+from django.http import JsonResponse
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_event_participants(request, event_id):
+    """API pour récupérer la liste des participants d'un événement"""
+    from appEvenements.models import Evenement, Participation
+    try:
+        event = Evenement.objects.get(id=event_id)
+        participations = Participation.objects.filter(evenement=event).select_related('user').order_by('registered_at')
+        participants = []
+        for participation in participations:
+            participants.append({
+                'username': participation.user.username,
+                'first_name': participation.user.first_name,
+                'last_name': participation.user.last_name,
+                'registered_at': participation.registered_at.strftime('%d/%m/%Y %H:%M'),
+                'status': participation.get_status_display()
+            })
+        return JsonResponse({'participants': participants})
+    except Evenement.DoesNotExist:
+        return JsonResponse({'error': 'Événement non trouvé'}, status=404)

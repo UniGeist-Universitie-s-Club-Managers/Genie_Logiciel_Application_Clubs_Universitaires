@@ -96,7 +96,7 @@
                             </div>
                         {% endif %}
                         <div class="d-flex justify-content-between">
-                            <a href="{% url 'liste' %}" class="btn btn-secondary">Annuler</a>
+                            <a href="{% url 'appEvenements:liste' %}" class="btn btn-secondary">Annuler</a>
                             <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Enregistrer{% else %}Ajouter{% endif %} l'Événement</button>
                         </div>
                     </form>

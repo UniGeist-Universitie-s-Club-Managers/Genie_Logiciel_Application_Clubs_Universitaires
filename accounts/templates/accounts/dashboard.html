@@ -113,7 +113,7 @@ body {
                         <h5 class="card-title">Évènements à venir</h5>
                         <p class="card-text">Découvrez tous les évènements prévus et participez-y.</p>
                         {% if user.is_authenticated %}
-                            <a href="#" class="btn btn-primary">Accéder</a>
+                            <a href="{% url 'accounts:events_home' %}" class="btn btn-primary">Accéder</a>
                         {% else %}
                             <a href="{% url 'login' %}" class="btn btn-primary">Se connecter</a>
                             <a href="{% url 'register' %}" class="btn btn-success">S'inscrire</a>
@@ -134,7 +134,7 @@ body {
                         <h5 class="card-title">Rejoignez des clubs</h5>
                         <p class="card-text">Consultez vos clubs et rejoignez de nouveaux groupes.</p>
                         {% if user.is_authenticated %}
-                            <a href="{% url 'clubs_home' %}" class="btn btn-primary">Accéder</a>
+                            <a href="{% url 'accounts:clubs_home' %}" class="btn btn-primary">Accéder</a>
                         {% else %}
                             <a href="{% url 'login' %}" class="btn btn-primary">Se connecter</a>
                             <a href="{% url 'register' %}" class="btn btn-success">S'inscrire</a>
@@ -155,7 +155,7 @@ body {
                         <h5 class="card-title">Documents et fichiers</h5>
                         <p class="card-text">Accédez à tous vos documents et ressources utiles.</p>
                         {% if user.is_authenticated %}
-                            <a href="#" class="btn btn-primary">Accéder</a>
+                            <a href="{% url 'accounts:resources_home' %}" class="btn btn-primary">Accéder</a>
                         {% else %}
                             <a href="{% url 'login' %}" class="btn btn-primary">Se connecter</a>
                             <a href="{% url 'register' %}" class="btn btn-success">S'inscrire</a>
@@ -176,7 +176,7 @@ body {
                         <h5 class="card-title">Guides et tutoriels</h5>
                         <p class="card-text">Consultez les guides pour vous aider à utiliser le site.</p>
                         {% if user.is_authenticated %}
-                            <a href="{% url 'help_home' %}" class="btn btn-primary">Accéder</a>
+                            <a href="{% url 'accounts:help_home' %}" class="btn btn-primary">Accéder</a>
                         {% else %}
                             <a href="{% url 'login' %}" class="btn btn-primary">Se connecter</a>
                             <a href="{% url 'register' %}" class="btn btn-success">S'inscrire</a>
@@ -197,7 +197,7 @@ body {
                         <h5 class="card-title">Discussions et Q&A</h5>
                         <p class="card-text">Participez aux discussions et posez vos questions sur différents sujets.</p>
                         {% if user.is_authenticated %}
-                            <a href="#" class="btn btn-primary">Accéder</a>
+                            <a href="{% url 'accounts:forums_home' %}" class="btn btn-primary">Accéder</a>
                         {% else %}
                             <a href="{% url 'login' %}" class="btn btn-primary">Se connecter</a>
                             <a href="{% url 'register' %}" class="btn btn-success">S'inscrire</a>

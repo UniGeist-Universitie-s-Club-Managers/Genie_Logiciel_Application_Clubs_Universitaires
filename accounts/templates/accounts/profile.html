@@ -139,14 +139,14 @@ body {
 <div class="page-container">
     <div class="sidebar">
         <h3>Navigation</h3>
-        <a href="{% url 'profile' %}" class="active">Profil</a>
-        <a href="{% url 'user_history' %}">Historique</a>
-        <a href="{% url 'dashboard' %}">Mes Clubs</a>
-        <a href="{% url 'dashboard' %}">Évènements</a>
-        <a href="{% url 'dashboard' %}">Forums</a>
-        <a href="{% url 'dashboard' %}">Aides</a>
-        <a href="{% url 'dashboard' %}">Ressources</a>
-        <a href="{% url 'chatbot' %}">Chatbot</a>
+        <a href="{% url 'accounts:profile' %}" class="active">Profil</a>
+        <a href="{% url 'accounts:user_history' %}">Historique</a>
+        <a href="{% url 'accounts:dashboard' %}">Mes Clubs</a>
+        <a href="{% url 'accounts:dashboard' %}">Évènements</a>
+        <a href="{% url 'accounts:dashboard' %}">Forums</a>
+        <a href="{% url 'accounts:dashboard' %}">Aides</a>
+        <a href="{% url 'accounts:dashboard' %}">Ressources</a>
+        <a href="{% url 'accounts:chatbot' %}">Chatbot</a>
     </div>
 
     <div class="main-content">
@@ -157,8 +157,8 @@ body {
             <p><strong>Email:</strong> {{ user.email }}</p>
             <p><strong>Phone:</strong> {{ user.phone }}</p>
             <p><strong>Adresse:</strong> {{ user.address }}</p>
-            <a href="{% url 'logout' %}" class="btn btn-warning">Se déconnecter</a>
-            <a href="{% url 'delete_account' %}" class="btn btn-danger">Supprimer mon compte</a>
+            <a href="{% url 'accounts:logout' %}" class="btn btn-warning">Se déconnecter</a>
+            <a href="{% url 'accounts:delete_account' %}" class="btn btn-danger">Supprimer mon compte</a>
         </div>
     </div>
 </div>

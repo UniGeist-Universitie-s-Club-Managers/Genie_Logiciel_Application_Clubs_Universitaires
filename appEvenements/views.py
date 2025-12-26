@@ -6,7 +6,7 @@ from .forms import EvenementForm, PromotionForm
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from accounts.models import Membership
+from accounts.models import User, Membership
 from django.urls import reverse
 try:
     from reportlab.pdfgen import canvas
@@ -26,6 +26,24 @@ class ListeEvenementsView(ListView):
     context_object_name = 'evenements'
     paginate_by = 10
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        events_with_flags = []
+        for event in context['evenements']:
+            is_registered = Participation.objects.filter(evenement=event, user=user).exists() if user.is_authenticated else False
+            is_full = Participation.objects.filter(evenement=event).count() >= event.max_participants
+            can_register = user.is_authenticated and (event.visibilite == 'public' or
+                                                      Membership.objects.filter(user=user, active=True).exists()) and not (user.is_superuser or user.is_staff)
+            events_with_flags.append({
+                'event': event,
+                'is_registered': is_registered,
+                'is_full': is_full,
+                'can_register': can_register
+            })
+        context['events_with_flags'] = events_with_flags
+        return context
+
 class DetailEvenementView(DetailView):
     model = Evenement
     template_name = 'appEvenements/evenements_details.html'
@@ -42,6 +60,8 @@ class DetailEvenementView(DetailView):
             context['participants'] = Participation.objects.filter(evenement=evenement).select_related('user')
         context['is_registered'] = Participation.objects.filter(evenement=evenement, user=user).exists() if user.is_authenticated else False
         context['is_full'] = Participation.objects.filter(evenement=evenement).count() >= evenement.max_participants
+        context['can_register'] = user.is_authenticated and (evenement.visibilite == 'public' or
+                                                             Membership.objects.filter(user=user, active=True).exists()) and not (user.is_superuser or user.is_staff)
         return context
 
 class CreateEvenementView(LoginRequiredMixin, CreateView):
@@ -65,7 +85,7 @@ class CreateEvenementView(LoginRequiredMixin, CreateView):
         print(f"Has active membership: {has_membership}")
         if not (user.is_superuser or user.is_staff or has_membership):
             print("No permission, returning form_invalid")
-            messages.error(self.request, "Vous devez être administrateur ou membre d'un groupe pour créer un événement.")
+            form.add_error(None, "Vous devez être administrateur ou membre d'un groupe pour créer un événement.")
             return self.form_invalid(form)
         print("Has permission, calling super().form_valid")
         result = super().form_valid(form)
@@ -143,13 +163,14 @@ def download_pdf(request, evenement_id):
 
 
 def calendar_view(request):
-    # Get upcoming events closest to current date
+    # Get all events for calendar display
     from django.utils import timezone
+    import json
     now = timezone.now()
-    upcoming_events = Evenement.objects.filter(date_debut__gte=now).order_by('date_debut')[:10]
+    all_events = Evenement.objects.all().order_by('date_debut')
 
-    # Get featured events for homepage (all public events that are marked as featured, including past ones)
-    featured_events = Evenement.objects.filter(visibilite='public', featured=True).order_by('-date_debut')[:6]
+    # Get featured events for homepage (all events that are marked as featured, including past ones)
+    featured_events = Evenement.objects.filter(featured=True).order_by('-date_debut')[:6]
 
     # Get statistics
     total_events = Evenement.objects.count()
@@ -158,8 +179,8 @@ def calendar_view(request):
     completed_events = Evenement.objects.filter(statut='termine').count()
 
     events_data = []
-    for event in upcoming_events:
-        events_data.append({
+    for event in all_events:
+        event_dict = {
             'id': event.id,
             'title': event.titre,
             'start': event.date_debut.isoformat(),
@@ -167,11 +188,17 @@ def calendar_view(request):
             'description': event.description,
             'location': event.lieu,
             'status': event.statut,
-        })
+            'featured': event.featured,
+        }
+        if event.featured:
+            event_dict['color'] = '#FFD700'  # Yellow color for featured events
+        events_data.append(event_dict)
 
     context = {
-        'events': events_data,
+        'events': json.dumps(events_data),  # Convert to JSON string for JavaScript
+        'events_list': events_data,  # Keep original list for template use
         'featured_events': featured_events,
+        'upcoming_events_list': all_events.filter(date_debut__gte=now).order_by('date_debut')[:6],
         'total_events': total_events,
         'upcoming_events': upcoming_events_count,
         'active_events': active_events,
@@ -192,7 +219,7 @@ def promote_event(request, evenement_id):
         if form.is_valid():
             form.save()
             messages.success(request, f"L'événement '{evenement.titre}' a été mis à la une avec succès !")
-            return redirect('admin_interface')
+            return redirect('appEvenements:admin_interface')
     else:
         form = PromotionForm(instance=evenement)
 
@@ -208,7 +235,7 @@ def remove_promotion(request, evenement_id):
     evenement.promotion_description = None
     evenement.save()
     messages.success(request, f"La promotion de l'événement '{evenement.titre}' a été supprimée.")
-    return redirect('admin_interface')
+    return redirect('appEvenements:admin_interface')
 
 def toggle_featured(request, evenement_id):
     if request.method == 'POST':
@@ -229,17 +256,48 @@ def register_evenement(request, evenement_id):
     evenement = get_object_or_404(Evenement, id=evenement_id)
     user = request.user
 
+    # Check if user can register for this event
+    can_register = (evenement.visibilite == 'public' or
+                    user.is_superuser or
+                    user.is_staff or
+                    Membership.objects.filter(user=user, active=True).exists())
+
+    if not can_register:
+        messages.error(request, "Vous n'avez pas la permission de vous inscrire à cet événement.")
+        return redirect('appEvenements:details', evenement_id=evenement_id)
+
     # Check if already registered
     if Participation.objects.filter(evenement=evenement, user=user).exists():
         messages.warning(request, "Vous êtes déjà inscrit à cet événement.")
-        return redirect('detail_evenement', evenement_id=evenement_id)
+        return redirect('appEvenements:details', evenement_id=evenement_id)
 
     # Check if event is full
     if Participation.objects.filter(evenement=evenement).count() >= evenement.max_participants:
         messages.error(request, "L'événement est complet.")
-        return redirect('detail_evenement', evenement_id=evenement_id)
+        return redirect('appEvenements:details', evenement_id=evenement_id)
 
     # Create participation
     Participation.objects.create(evenement=evenement, user=user)
     messages.success(request, f"Vous vous êtes inscrit avec succès à l'événement '{evenement.titre}'.")
-    return redirect('detail_evenement', evenement_id=evenement_id)
+    return redirect('appEvenements:details', evenement_id=evenement_id)
+
+def remove_participant(request, evenement_id, user_id):
+    if request.method == 'POST':
+        user = request.user
+        if not (user.is_superuser or user.is_staff or Membership.objects.filter(user=user, active=True).exists()):
+            messages.error(request, "Vous n'avez pas la permission de retirer des participants.")
+            return redirect('appEvenements:details', evenement_id=evenement_id)
+
+        evenement = get_object_or_404(Evenement, id=evenement_id)
+        participant_user = get_object_or_404(User, id=user_id)
+
+        participation = Participation.objects.filter(evenement=evenement, user=participant_user).first()
+        if participation:
+            participation.delete()
+            messages.success(request, f"Le participant {participant_user.username} a été retiré de l'événement '{evenement.titre}'.")
+        else:
+            messages.warning(request, "Ce participant n'était pas inscrit à cet événement.")
+
+        return redirect('appEvenements:details', evenement_id=evenement_id)
+    else:
+        return redirect('appEvenements:details', evenement_id=evenement_id)

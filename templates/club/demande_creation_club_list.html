@@ -12,7 +12,7 @@
             <h2 class="mb-4"><i class="fas fa-file-alt"></i> Demandes de Création de Club</h2>
         </div>
         <div class="col-md-4 text-md-end">
-            <a href="{% url 'demande_creation_club_view' %}" class="btn btn-primary btn-lg">
+            <a href="{% url 'club:demande_creation_club_view' %}" class="btn btn-primary btn-lg">
                 <i class="fas fa-plus"></i> Nouvelle Demande
             </a>
         </div>
@@ -40,22 +40,22 @@
                         <span class="badge bg-info">{{ demande.requested_by }}</span>
                     </td>
                     <td class="text-center">
-                        <a href="{% url 'demande_creation_club_detail_view' demande.demande_id %}" class="btn btn-sm btn-info" title="Voir les détails">
+                        <a href="{% url 'club:demande_creation_club_detail_view' demande.demande_id %}" class="btn btn-sm btn-info" title="Voir les détails">
                             <i class="fas fa-eye"></i> Détails
                         </a>
                     </td>
                     <td class="text-center">
-                        <a href="{% url 'demande_creation_club_update_view' demande.demande_id %}" class="btn btn-sm btn-warning" title="Modifier">
+                        <a href="{% url 'club:demande_creation_club_update_view' demande.demande_id %}" class="btn btn-sm btn-warning" title="Modifier">
                             <i class="fas fa-edit"></i> Modifier
                         </a>
                     </td>
                     <td class="text-center">
-                        <a href="{% url 'demande_creation_club_delete_view' demande.demande_id %}" class="btn btn-sm btn-danger" title="Supprimer">
+                        <a href="{% url 'club:demande_creation_club_delete_view' demande.demande_id %}" class="btn btn-sm btn-danger" title="Supprimer">
                             <i class="fas fa-trash"></i> Supprimer
                         </a>
                     </td>
                     <td class="text-center">
-                        <a href="{% url 'accept_demande' demande.demande_id %}" 
+                        <a href="{% url 'club:accept_demande' demande.demande_id %}"
                             class="btn btn-success btn-sm">
                             Accepter
                         </a>

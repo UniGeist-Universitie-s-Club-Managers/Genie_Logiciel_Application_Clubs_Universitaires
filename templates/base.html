@@ -18,7 +18,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top minimalist-navbar" id="mainNavbar">
         <div class="container d-flex justify-content-between align-items-center">
-            <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}" id="navbarBrand">
+            <a class="navbar-brand fw-bold" href="{% url 'accounts:dashboard' %}" id="navbarBrand">
                 <img src="{% static 'images/logo.png' %}" alt="Logo UniGeist" class="navbar-logo">
                 <span class="brand-text">UniGeist</span>
             </a>
@@ -37,12 +37,16 @@
                             <i class="fas fa-bars"></i> Menu
                         </a>
                         <ul class="dropdown-menu minimalist-dropdown" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-users"></i> Utilisateurs</a></li>
-                            <li><a class="dropdown-item" href="{% url 'club_list_view' %}"><i class="fas fa-users-cog"></i> Clubs</a></li>
-                            <li><a class="dropdown-item" href="{% url 'liste' %}"><i class="fas fa-calendar-alt"></i> Événements</a></li>
-                            <li><a class="dropdown-item" href="/forum/"><i class="fas fa-comments"></i> Forum</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-users"></i> Utilisateurs</a></li>
+                            <li><a class="dropdown-item" href="{% url 'club:club_list_view' %}"><i class="fas fa-users-cog"></i> Clubs</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:events_home' %}"><i class="fas fa-calendar-alt"></i> Évènements</a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:forum-list' %}"><i class="fas fa-comments"></i> Forum</a></li>
                             <li><a class="dropdown-item" href="{% url 'resources:aid_list' %}"><i class="fas fa-question-circle"></i> Aides</a></li>
                             <li><a class="dropdown-item" href="{% url 'resources:resource_list' %}"><i class="fas fa-book"></i> Ressources</a></li>
+                            {% if user.is_staff or user.is_superuser %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:admin_panel' %}"><i class="fas fa-cog"></i> Administration</a></li>
+                            {% endif %}
                         </ul>
                     </li>
                 </ul>
@@ -55,7 +59,7 @@
         <div class="container text-center dynamic-text">
             <h1 class="display-4 fw-bold">{% block hero_title %}Bienvenue sur la Plateforme de Gestion des Clubs Universitaires{% endblock %}</h1>
             <p class="lead">{% block hero_subtitle %}Connectez-vous, gérez vos clubs, participez aux événements et échangez sur le forum.{% endblock %}</p>
-            <a href="{% url 'liste' %}" class="btn btn-primary btn-lg">Commencer</a>
+            <a href="{% url 'appEvenements:liste' %}" class="btn btn-primary btn-lg">Commencer</a>
         </div>
     </section>
 
@@ -74,10 +78,10 @@
                             Rejoignez la communauté étudiante, participez aux événements et développez vos passions !
                         </p>
                         <div class="animate__animated animate__fadeInUp animate__delay-2s">
-                            <a href="{% url 'liste' %}" class="btn btn-light btn-lg mr-3">
+                            <a href="{% url 'appEvenements:liste' %}" class="btn btn-light btn-lg mr-3">
                                 <i class="fas fa-calendar-alt mr-2"></i>Voir tous les événements
                             </a>
-                            <a href="{% url 'calendar' %}" class="btn btn-outline-light btn-lg">
+                            <a href="{% url 'appEvenements:calendar' %}" class="btn btn-outline-light btn-lg">
                                 <i class="fas fa-calendar mr-2"></i>Calendrier interactif
                             </a>
                         </div>
@@ -160,7 +164,7 @@
                         <div class="card-body">
                             <h2 class="card-title"><i class="fas fa-calendar-alt"></i> Événements</h2>
                             <p class="card-text">Organisez et participez à des événements : conférences, ateliers, compétitions. Restez informé des dates et inscriptions.</p>
-                            <a href="{% url 'liste' %}" class="btn btn-outline-primary">Voir les Événements</a>
+                            <a href="{% url 'appEvenements:liste' %}" class="btn btn-outline-primary">Voir les Événements</a>
                         </div>
                     </div>
                 </div>
