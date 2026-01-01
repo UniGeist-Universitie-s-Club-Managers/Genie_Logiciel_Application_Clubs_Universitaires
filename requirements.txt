@@ -1,0 +1,18 @@
+# Django and related packages
+Django==5.2.9
+django-widget-tweaks==1.5.0
+
+# Google Gemini API (new package)
+google-genai==0.8.0
+
+# Environment variables
+python-dotenv==1.0.1
+
+# HTTP requests
+requests==2.31.0
+
+# WebSockets (if used in forums)
+websockets==13.1
+
+# Werkzeug (if used in forums)
+Werkzeug==3.0.4

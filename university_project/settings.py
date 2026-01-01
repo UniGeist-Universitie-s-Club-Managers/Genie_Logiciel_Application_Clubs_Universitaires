@@ -12,9 +12,45 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env file
+ENV_FILE = BASE_DIR / '.env'
+load_dotenv(dotenv_path=str(ENV_FILE))  # Convert Path to string for dotenv
+
+# OpenAI API Key
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+# Google Gemini API Key - Try multiple methods to load it
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+
+# If not loaded from os.getenv, try reading directly from .env file
+if not GOOGLE_API_KEY and ENV_FILE.exists():
+    try:
+        with open(ENV_FILE, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith('GOOGLE_API_KEY='):
+                    GOOGLE_API_KEY = line.split('=', 1)[1].strip('"\'')
+                    break
+    except Exception as e:
+        print(f"Error reading .env file: {e}", file=__import__('sys').stderr)
+
+# Debug: Verify API key is loaded
+import sys
+if not GOOGLE_API_KEY:
+    print(f"WARNING: GOOGLE_API_KEY not found!", file=sys.stderr)
+    print(f"  Checked .env file at: {ENV_FILE}", file=sys.stderr)
+    print(f"  File exists: {ENV_FILE.exists()}", file=sys.stderr)
+    if ENV_FILE.exists():
+        with open(ENV_FILE, 'r') as f:
+            content = f.read()
+            print(f"  .env content: {content[:100]}", file=sys.stderr)
+else:
+    print(f"✓ GOOGLE_API_KEY loaded successfully ({len(GOOGLE_API_KEY)} chars)", file=sys.stderr)
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,7 +62,7 @@ SECRET_KEY = 'django-insecure-8%4gkckf3fdnv0e356=vj7b=-)6ms7x0rn$_9_^au3hye7-!kc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition

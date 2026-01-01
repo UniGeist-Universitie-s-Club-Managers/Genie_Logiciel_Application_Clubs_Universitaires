@@ -1,13 +1,24 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.utils import timezone
+from django.conf import settings
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.http import HttpResponse
 from .models import User, Membership, Contribution, EventParticipation, UserBadge
 from .forms import RegisterForm
 from appEvenements.models import Evenement
 from resources.models import Resource, Aid, FAQ
 from clubApp.models import Club
+import requests
+import json
+import os
+import sys
+import google.genai as genai
 
 # -------------------- LOGIN --------------------
 def login_view(request):
@@ -49,7 +60,7 @@ def register_view(request):
             user.address = form.cleaned_data.get("address")
             user.save()
             messages.success(request, "Compte créé avec succès !")
-            return redirect("login")
+            return redirect("accounts:login")
     else:
         form = RegisterForm()
     return render(request, "accounts/register.html", {"form": form})
@@ -79,7 +90,7 @@ def delete_account(request):
         user = request.user
         user.delete()
         messages.success(request, "Compte supprimé.")
-        return redirect("login")
+        return redirect("accounts:login")
     return render(request, "accounts/delete_confirm.html")
 
 # -------------------- DASHBOARD --------------------
@@ -125,32 +136,142 @@ def history_view(request):
     return render(request, 'accounts/history.html', context)
 
 # -------------------- CHATBOT --------------------
+
+def _configure_gemini():
+    """Configure Gemini API with key from settings"""
+    api_key = getattr(settings, 'GOOGLE_API_KEY', None)
+    if api_key:
+        genai.configure(api_key=api_key)
+        return True
+    return False
+
 @login_required
 def chatbot_view(request):
     user = request.user
     answer = None
-    if request.method == 'POST':
-        question = request.POST.get('question', '').lower()
-        if 'combien' in question or 'total' in question or 'nombre' in question:
-            total_contrib = Contribution.objects.filter(user=user).count()
-            total_events = EventParticipation.objects.filter(user=user).count()
-            answer = f"Tu as {total_contrib} contribution(s) et {total_events} événement(s) inscrits."
-        elif 'badges' in question or 'badge' in question or 'récompense' in question:
-            badges = UserBadge.objects.filter(user=user)
-            if badges.exists():
-                answer = "Badges obtenus: " + ", ".join([ub.badge.name for ub in badges])
-            else:
-                answer = "Tu n'as pas encore de badge."
-        elif 'clubs' in question or 'club' in question:
-            clubs = Membership.objects.filter(user=user, active=True)
-            if clubs.exists():
-                answer = "Membre de : " + ", ".join([m.club.name for m in clubs])
-            else:
-                answer = "Tu n'es membre d'aucun club actif."
-        else:
-            answer = "Désolé, je n'ai pas compris. Essaie : 'Combien de contributions', 'Badges', 'Clubs'."
 
-    return render(request, 'accounts/chatbot.html', {'answer': answer})
+    # Get API key from Django settings (which loads from .env at startup)
+    api_key = getattr(settings, 'GOOGLE_API_KEY', None)
+
+    # Debug: Print API key status
+    print(f"DEBUG: GOOGLE_API_KEY present: {bool(api_key)}")
+    print(f"DEBUG: GOOGLE_API_KEY length: {len(api_key) if api_key else 0}")
+    print(f"DEBUG: GOOGLE_API_KEY value: {api_key[:10] if api_key else 'None'}...")
+
+    if not api_key:
+        answer = "Erreur: Clé API Google Gemini non configurée. Vérifiez votre fichier .env"
+        context = {'answer': answer, 'debug_api': {'present': False, 'length': 0}}
+        return render(request, 'accounts/chatbot.html', context)
+    
+    # Configure Gemini
+    try:
+        client = genai.Client(api_key=api_key)
+    except Exception as e:
+        answer = f"Erreur lors de la configuration de Gemini: {str(e)}"
+        context = {'answer': answer, 'debug_api': {'present': True, 'length': len(api_key) if api_key else 0}}
+        return render(request, 'accounts/chatbot.html', context)
+    
+    if request.method == 'POST':
+        question = request.POST.get('question', '').strip()
+
+        # Check if the question is about recommendations
+        recommendation_keywords = ['recommend', 'suggest', 'clubs', 'resources', 'aides', 'events', 'événements', 'like', 'interested', 'what should i']
+        is_recommendation = any(keyword in question.lower() for keyword in recommendation_keywords) or not question
+
+        if is_recommendation:
+            # Use recommendation logic
+            memberships = Membership.objects.filter(user=user).select_related('club')
+            contributions = Contribution.objects.filter(user=user).select_related('club')
+            participations = EventParticipation.objects.filter(user=user).select_related('event__club')
+
+            clubs_data = [
+                {
+                    "club_name": m.club.name,
+                    "joined_date": m.joined_at.strftime('%Y-%m-%d'),
+                    "role": m.role,
+                    "active": m.active
+                }
+                for m in memberships
+            ]
+            contributions_data = [
+                {
+                    "title": c.title,
+                    "club": c.club.name if c.club else "General",
+                    "created_at": c.created_at.strftime('%Y-%m-%d'),
+                    "score": c.score
+                }
+                for c in contributions
+            ]
+            events_data = [
+                {
+                    "event_title": p.event.title,
+                    "club": p.event.club.name,
+                    "registered_at": p.registered_at.strftime('%Y-%m-%d'),
+                    "attended": p.attended
+                }
+                for p in participations
+            ]
+            user_data = {
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email
+                },
+                "memberships": clubs_data,
+                "contributions": contributions_data,
+                "event_participations": events_data,
+                "payments": []  # No Payment model, so empty
+            }
+            json_data = json.dumps(user_data)
+
+            # Call Google Gemini for recommendations
+            if question:
+                prompt = f"Based on this user's history: {json_data}, and their question: '{question}', provide personalized recommendations for clubs, resources, or events they might be interested in. Respond in French."
+            else:
+                prompt = f"Based on this user's history: {json_data}, recommend 5 university clubs they might be interested in joining. Provide reasons for each recommendation based on their past memberships, contributions, and event participations. Respond in French."
+            try:
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=prompt
+                )
+                answer = response.text
+            except Exception as e:
+                answer = f"Erreur API Gemini: {str(e)}"
+        else:
+            # General chatbot logic
+            memberships = Membership.objects.filter(user=user, active=True).select_related('club')
+            clubs_data = [
+                {
+                    "club_name": m.club.name,
+                    "club_category": "General",
+                    "joined_date": m.joined_at.strftime('%Y-%m-%d')
+                }
+                for m in memberships
+            ]
+            user_data = {
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email
+                },
+                "clubs": clubs_data,
+                "payments": []
+            }
+            json_data = json.dumps(user_data)
+
+            prompt = f"User question: {question}\n\nUser data: {json_data}\n\nYou are a helpful assistant for a university club management system. Answer questions about clubs, events, resources, or provide general assistance. Respond in French."
+            try:
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=prompt
+                )
+                answer = response.text
+            except Exception as e:
+                answer = f"Erreur API Gemini: {str(e)}"
+
+    return render(request, 'accounts/chatbot.html', {'answer': answer, 'debug_api': {'present': True, 'length': len(api_key) if api_key else 0}})
+
+
 
 # -------------------- VERIFY EMAIL --------------------
 def verify_email(request, uidb64, token):
@@ -165,7 +286,7 @@ def verify_email(request, uidb64, token):
         user.is_active = True
         user.save()
         messages.success(request, "Votre email a été vérifié avec succès !")
-        return redirect("login")
+        return redirect("accounts:login")
     else:
         return render(request, "accounts/failed_verification.html")
 

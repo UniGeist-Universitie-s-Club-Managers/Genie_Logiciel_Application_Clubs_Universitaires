@@ -1,8 +1,0 @@
-Bonjour {{ user.username }},
-
-Merci pour ton inscription sur {{ site_name }}.
-
-Clique sur le lien suivant pour vérifier ton adresse email :
-{{ verify_url }}
-
-Si tu n'as pas créé de compte, ignore cet email.

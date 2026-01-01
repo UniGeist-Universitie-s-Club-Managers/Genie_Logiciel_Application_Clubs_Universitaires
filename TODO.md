@@ -16,3 +16,20 @@
 - Après modifications, exécuter python manage.py makemigrations et migrate
 - Tester l'accès aux URLs du forum
 - Vérifier qu'aucune erreur n'apparaît dans les logs
+
+# Remplacement de l'API OpenAI par Google Gemini
+
+## Étapes à suivre :
+- [x] Installer la bibliothèque google-generativeai
+- [x] Modifier accounts/views.py pour remplacer les appels OpenAI par Google Gemini
+- [x] Vérifier que GOOGLE_API_KEY est configuré dans settings.py
+- [x] Tester le chatbot pour s'assurer que les recommandations fonctionnent
+
+## Fichiers dépendants :
+- accounts/views.py
+- university_project/settings.py
+
+## Étapes de suivi :
+- [x] Tester le chatbot avec des questions de recommandation
+- [x] Vérifier que les réponses sont en français
+- [x] S'assurer que les erreurs sont gérées correctement

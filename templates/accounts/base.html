@@ -51,13 +51,13 @@
                     </a>
 
                     <ul class="dropdown-menu minimalist-dropdown">
-                        <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user"></i> Profil</a></li>
+                        <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-user"></i> Profil</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-users"></i> Clubs</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-calendar-alt"></i> Évènements</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-comments"></i> Forums</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle"></i> Aides</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-book"></i> Ressources</a></li>
-                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                        <li><a class="dropdown-item" href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
                     </ul>
                 </li>
                 {% else %}
